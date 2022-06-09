@@ -1,9 +1,13 @@
 package gov.lanl.crawler.boundary;
-
+//import com.savoirtech.logging.slf4j.json.LoggerFactory;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ShortBuffer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,16 +18,19 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.apache.log4j.Logger;
+import org.archive.util.FileUtils;
+//import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.SessionId;
 import org.openqa.selenium.support.events.AbstractWebDriverEventListener;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -37,8 +44,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.bogdanlivadariu.gifwebdriver.GifScreenshotWorker;
-import com.github.bogdanlivadariu.gifwebdriver.GifWebDriver;
+//import com.github.bogdanlivadariu.gifwebdriver.GifScreenshotWorker;
+//import com.github.bogdanlivadariu.gifwebdriver.GifWebDriver;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 public class TracePlayer extends AbstractWebDriverEventListener {
 	String allarea = "click all links in an area";
@@ -46,15 +55,27 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 	int clickcount = 0;
 	String slowmode;
 	String partialexit = null;
-	static Logger statsloger = Logger.getLogger("stats");
+	//static Logger statsloger = Logger.getLogger("stats");
+	 //LoggerFactory.setIncludeLoggerName(false);
+	 
+     //LoggerFactory.setDateFormatString("yyyy-MM-dd HH:mm:ss.SSS");
+
+     // com.savoirtech.logging.slf4j.json.logger.Logger statsloger =  LoggerFactory.getLogger("JSONLogger");
+    
+      
 	// statsloger.info(id+" "+srvdate+" "+logservice+" 0 0 1 0");
 	WebDriver gdriver;
-
+	DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy ");
+	Map actionlog;
+	String json;
 	TracePlayer(String slowmode, RemoteWebDriver driver) {
 		this.slowmode = slowmode;
-		this.gdriver = new GifWebDriver(driver);
-		// GifScreenshotWorker gifWorker = ((GifWebDriver)
-		// gdriver).getGifScreenshotWorker();
+		//this.gdriver = new GifWebDriver(driver);
+		this.actionlog = new HashMap();
+		//this.statsloger.info().field("sesid", driver.getSessionId());
+		
+		//GifScreenshotWorker gifWorker = ((GifWebDriver)
+		 //gdriver).getGifScreenshotWorker();
 		// gifWorker.setTimeBetweenFramesInMilliseconds(1000);
 		// gifWorker.setRootDir("/Users/Lyudmila/stormarchiver/gif/");
 		// gifWorker.setLoopContinuously(true);
@@ -64,7 +85,8 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 	}
 
 	public void finish() {
-		File createdGif = ((GifWebDriver) gdriver).getGifScreenshotWorker().createGif();
+		
+		//File createdGif = ((GifWebDriver) gdriver).getGifScreenshotWorker().createGif();
 	}
 
 	public static By getBy(String locatortype, String tn) {
@@ -255,7 +277,7 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 	//					.executeScript("return  document.readyState =='complete'"));
 		bu.waitForJSandJQueryToLoad(driver);
 		
-		int status = 0;
+		int status = 0; //somekind of error
 		int retries = 0;
 		final int MAX_STALE_ELEMENT_RETRIES = 3;
 		while (true) {
@@ -265,26 +287,32 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 				//actions.moveToElement(we);
 				//actions.perform();
 				//this is better with svg elements
-				Actions builder = new Actions(driver);
+				//_Actions builder = new Actions(driver);
 				//builder.moveToElement(we).click(we);
 				//int height = we.getSize().getHeight();
 			    //int width = we.getSize().getWidth();
 			    //((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", we);
-			    builder.moveToElement(we).click(we).build().perform();
+			   //_ builder.moveToElement(we).click(we).build().perform();
 			    //builder.moveToElement(we).click(we);
 			   // builder.moveByOffset((width/2)+2,(height/2)+2).click();
 				//builder.move_by_offset(x_off, y_off);
 				//builder.perform();
 				System.out.println("retries" + retries);
-				status = 1;
-				break;
-				  //int loc = we.getLocation().getY();
-				  //JavascriptExecutor js = (JavascriptExecutor) driver; 
+				//_status = 1; //real click
+				//_break;
+				  int loc = we.getLocation().getY();
+				  System.out.println("location"+loc);
+				  JavascriptExecutor js = (JavascriptExecutor) driver; 
 				  //js.executeScript("window.scrollTo(0, " + loc + ");"); 
-				  //js.executeScript("arguments[0].scrollIntoViewIfNeeded(true);", we);
-				  //js.executeScript("arguments[0].click();", we);
-			
-				
+				  js.executeScript("arguments[0].scrollIntoViewIfNeeded(true);", we);
+				  
+                  js.executeScript("arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"nearest\"});", we);
+                 
+                  // new WebDriverWait(driver, 20).until(ExpectedConditions.elementToBeClickable(by));
+				  js.executeScript("arguments[0].click();", we);
+				      
+				  status = 1; 
+				break;
 				//if (slowmode.equals("true")) {
 					// ((GifWebDriver) gdriver).getGifScreenshotWorker().takeScreenshot();
 					// try {Thread.sleep(100);} catch (InterruptedException ie) {}
@@ -314,12 +342,28 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 		}
         return status;
 	}
-
+void do_screen(RemoteWebDriver driver) {
+	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
+	File ff = driver.getScreenshotAs(OutputType.FILE);
+    File oo = new File("./video/screenshotafter"+dateFormat.format(new Date())+".png");
+    try {
+		FileUtils.copyFile(ff, oo);
+	} catch (FileNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
 	public int doClick(RemoteWebDriver driver, By by, String url, Boolean goback, Map myoptions,
 			List<SimpleEntry> dummyContent) {
-		StringBuffer sblog = new StringBuffer();
-		int status = 0;
+		//StringBuffer sblog = new StringBuffer();
+		//SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
+		int status = 0; //  default error
+		System.out.println("locator:"+by.toString());
 		List<WebElement> ls = getElementsByLocator(by, driver);
+		
 		// String current = driver.getWindowHandle();
 		String subtrace = null;
 		int i = 0;
@@ -333,10 +377,19 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 			}
 			for (i = start; i < ls.size(); i++) {
 				System.out.println("element number:" + i);
+				if (myoptions.containsKey("repeatedclick")&&i>0) {
+					System.out.println("option repited click");
+					status=1;
+					break;
+				}
 				try {
-					status = 2;
+					status = 2; //element found and put aside
+					
+						
+					
 					WebElement we = ls.get(i);
-
+					//have to refresh
+					we = getElementsByLocatorIndex(by, driver, i);
 					String tagName = print_tag(we);
 					String hr = we.getAttribute("href");
 					String estyle = we.getAttribute("style");
@@ -344,7 +397,6 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 
 					if (slowmode.equals("true")) {
 						highLighterMethod(driver, we);
-						// ((GifWebDriver) gdriver).getGifScreenshotWorker().takeScreenshot();
 					}
 
 					//int loc = we.getLocation().getY();
@@ -354,28 +406,35 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 						if (!myoptions.containsKey("click")) {
 							if (tagName.equals("a") && myoptions.containsKey("subtrace")) {
 								subtrace = (String) myoptions.get("subtrace");
-								status = 3;
+								status = 3; // element found and put aside with subtrace 
 							}
-							System.out.println("repeatedclick status" + status);
+						//	System.out.println("repeatedclick, <status 0-default error,1 - real click"
+						//			+ " 2 element found and put aside - 3 element found and put aside with subtrace >, " + status);
+							//href -then save in deffered
 							if (hr != null) {
 								System.out.println("element url" + hr);
 								dummyContent.add(new SimpleEntry(hr, subtrace));
 								clickcount = clickcount + 1;
+								
 								continue;
 							}
 						}
 					}
+					
 
+					
 					System.out.println("is_enabled element:" + we.isEnabled());
-
+					//int loc = we.getLocation().getY();
 					status = sClick(we, driver, by, i, estyle);
-
+					 //JavascriptExecutor js = (JavascriptExecutor) driver; 
+					 //js.executeScript("window.scrollTo(0, " + loc + ");");
 					clickcount = clickcount + 1;
 					System.out.println(" clicked element number:" + i);
-
+					//do_screen(driver);
+					
 				} catch (Exception e) {
 
-					status = 0;
+					status = 0; // error
 					System.out.println("from doClick:" + e.getMessage());
 					System.out.println("element_number:" + i);
 				}
@@ -409,7 +468,7 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 
 				ls = (List<WebElement>) wait.until(ExpectedConditions.
 				// .elementToBeClickable(locator));
-				// visibilityOfAllElementsLocatedBy(locator);
+				// visibilityOfAllElementsLocatedBy(locator));
 						presenceOfAllElementsLocatedBy(locator));
 				found = true;
 				break;
@@ -683,6 +742,25 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 
 		} // while
 			// stop_traversing = true;
+		 SessionId si = driver.getSessionId();
+			String sid = si.toString();
+	
+		//ObjectMapper objectMapper = new ObjectMapper();
+		//String json;
+		//try {
+		//	json = objectMapper.writeValueAsString(parentNode);
+		//	JsonElement je = new JsonParser().parse(json);
+		/*	statsloger.info().field("url",urlValue)
+			.field("func","untilvaluematches")
+			.field("sesid",sid)
+			.field("elementsfound",clickcount_)
+			.field("nodeid",parentNode.path("id").asText()).log();
+			//.field("status",status)
+			//.json("node", je).log() ;*/
+		//} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//}
 		process(parentNode);
 
 	}
@@ -697,7 +775,7 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 		if (sel != null) {
 			locatortype = (String) sel.get("selectorType");
 			tn = (String) sel.get("selector");
-			System.out.println("selector" + tn);
+			System.out.println("untildefault:selector" + tn);
 			by = getBy(locatortype, tn);
 		}
 		if (locatortype.equals("CSSSelector")) {
@@ -714,13 +792,13 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 		int status_ = 0;
 		int defcount = 1;
 		while (isExists) {
-			traverseChildren(parentNode, driver, urlValue, urls);
+		    traverseChildren(parentNode, driver, urlValue, urls);
 			status_ = doClick(driver, by, urlValue, false, _options, urls);
 			bu.waitForJSandJQueryToLoad(driver);
-			// traverseChildren(parentNode, driver, urlValue, urls);
+			//traverseChildren(parentNode, driver, urlValue, urls);
 			System.out.println("nextclicked " + defcount);
 			if (status_ == 0 || defcount == 100) {
-				System.out.println("no next button");
+				System.out.println("untildefault:no next button");
 				process(parentNode);
 				// stop_traversing = true;
 				isExists = false;
@@ -730,6 +808,9 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 			bu.backscroll0(driver);
 			System.out.println(isExists);
 		}
+		 //SessionId si = driver.getSessionId();
+			//String sid = si.toString();
+		
 		process(parentNode);
 
 	}
@@ -758,7 +839,7 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 			usercount = parentNode.path("repeat").path("until").path("selectorValue").intValue();
 			System.out.println("usersupplied count:"+usercount);
 		}
-
+       int status=0;
 		looplbl: while (true) {
 			if (clickcount > usercount) {
 				System.out.println("exiting resource count");
@@ -766,7 +847,7 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 			}
 			traverseChildren(parentNode, driver, urlValue, urls);
 			bu.waitForJSandJQueryToLoad(driver);
-			doClick(driver, by, urlValue, false, _options, urls);
+			status =doClick(driver, by, urlValue, false, _options, urls);
 			// traverseChildren(parentNode, driver, urlValue, urls);
 			// bu.dependableClick(driver, by);
 			bu.backscroll500(driver);
@@ -778,6 +859,15 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 
 		} // while
 			// stop_traversing = true;
+		//System.out.println("removing children from futher process");
+		//ObjectMapper objectMapper = new ObjectMapper();
+		//String json;
+		//try {
+		//	json = objectMapper.writeValueAsString(parentNode);
+		//	JsonElement je = new JsonParser().parse(json);
+       SessionId si = driver.getSessionId();
+		String sid = si.toString();
+	
 		System.out.println("removing children from futher process");
 		process(parentNode);
 	}
@@ -846,6 +936,26 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 			// JsonNode p = parentNode.get("children");
 
 		}
+		//process(parentNode);
+		//ObjectMapper objectMapper = new ObjectMapper();
+		//String json;
+		SessionId si = driver.getSessionId();
+		String sid = si.toString();
+	
+		//try {
+		//	json = objectMapper.writeValueAsString(parentNode);
+		//	JsonElement je = new JsonParser().parse(json);
+		/*	statsloger.info().field("url",urlValue)
+			.field("func","multiclickalongwith")
+			.field("sesid",sid)
+			.field("elementsfound",hmany)
+			.field("status",status)
+			.field("nodeid",parentNode.path("id").asText()).log();*/
+			//.json("node", je).log() ;
+		//} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//}
 		process(parentNode);
 	}
 
@@ -912,7 +1022,27 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 				driver.switchTo().window(currentPageHandle);
 			}
 		}
-
+		//ObjectMapper objectMapper = new ObjectMapper();
+		//String json;
+		SessionId si = driver.getSessionId();
+		String sid = si.toString();
+	
+		//try {
+		//	json = objectMapper.writeValueAsString(parentNode);
+			//JsonElement je = new JsonParser().parse(json);
+			/*statsloger.info().field("url",urlValue)
+			.field("func","clickandback")
+			.field("sesid",sid)
+			.field("elementsfound",howmany)
+			.field("status",status)
+			.field("nodeid",parentNode.path("id").asText()).log(); */
+			//.json("node", je).log() ;
+		//} catch (JsonProcessingException e) {
+		//	// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//}
+		
+		
 	}
 
 	public void doScroll(JsonNode parentNode, RemoteWebDriver driver, String urlValue, List<SimpleEntry> urls) {
@@ -947,17 +1077,18 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 			
 			
 		JavascriptExecutor js= ((JavascriptExecutor)driver);
-		
+		Long relativeHeight=0L;
 		if (s.equals("all")) {
 			
 			while (true) {
+				
 				// js.executeScript("window.scrollBy(0,document.body.offsetHeight);");
 				js.executeScript("window.scrollBy(0,1024);");
 				Object height = js.executeScript("return document.body.offsetHeight");
 				//System.out.println("offset height" + height);
 				scrollcount = scrollcount + 1;
 				readyStateComplete = bu.waitForJSandJQueryToLoad(driver);
-				Long relativeHeight = getRelativeHeight(js);
+				relativeHeight = getRelativeHeight(js);
 				System.out.println( "relative"+relativeHeight);
 				traverseChildren(parentNode, driver, urlValue, urls);
 				if (max > -1) {
@@ -971,10 +1102,33 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 				if (relativeHeight.equals(-1l)) {
 					break;
 				}
+				
+				
+				
+				
 			}
 		}
 		
-
+		//ObjectMapper objectMapper = new ObjectMapper();
+		//String json;
+		SessionId si = driver.getSessionId();
+		String sid = si.toString();
+		//String height = (String) js.executeScript("return document.documentElement.scrollHeight");
+		//try {
+		//	json = objectMapper.writeValueAsString(parentNode);
+		//	JsonElement je = new JsonParser().parse(json);
+			/*statsloger.info().field("url",urlValue)
+			.field("func","scroll")			
+			.field("sesid",sid) 
+			//.field("elementsfound",clickcount_)
+			
+			//.field("height",height)
+			.field("nodeid",parentNode.path("id").asText()).log(); */
+			//.json("node", je).log() ;
+		//} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//}
 	}
 
 	public void traverseChildren(JsonNode parentNode, RemoteWebDriver driver, String urlValue, List<SimpleEntry> urls) {
@@ -1003,17 +1157,47 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 	// this is main entry point for the trace replay
 	public void traverseTrace(JsonNode parentNode, RemoteWebDriver driver, String urlValue, List<SimpleEntry> urls) {
 		// traverse all nodes that belong to the parent
-
+		SessionId si = driver.getSessionId();
+		//driver.getTitle();
+		//Date date = new Date();
+		//String date1= dateFormat.format(date);
+		String id = si.toString();
+		//ObjectMapper objectMapper = new ObjectMapper();
+		//String json;
+		
+		
 		StringBuffer sb = new StringBuffer();
 		System.out.println("nodename" + parentNode.path("actionName"));
 		System.out.println("order" + parentNode.path("eventOrder"));
 		String order = parentNode.path("eventOrder").asText();
 		String action = parentNode.path("actionName").asText();
 		String evname = parentNode.path("name").asText();
+		
+		//try {
+		//	json = objectMapper.writeValueAsString(parentNode);
+		//	JsonElement je = new JsonParser().parse(json);
+			//statsloger.info().field("url",urlValue)
+			//.field("func","traverse")
+			//.field("sesid",id)
+			//.field("action",action)
+			//.field("nodeid",parentNode.path("id").asText()).log();
+			//.json("node", je).log() ;
+		//} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//}
+		
+		
 		sb.append(urlValue + "," + evname + "," + action + "," + order);
+		
 		System.out.println("action" + action);
 		JsonNode repeatNode = parentNode.path("repeat").path("until");
 		JsonNode repeatwithNode = parentNode.path("repeat").path("along_with");
+		
+		
+		
+		
+		
 		boolean norepeat = false;
 		if (repeatNode.isMissingNode() && repeatwithNode.isMissingNode())
 			norepeat = true;
@@ -1026,6 +1210,7 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 
 		// if (action.equals("click") && repeatNode.isMissingNode()) {
 		if (action.equals("click") && norepeat) {
+			System.out.println("Simple click");
 			// simple click
 			Map sel = getPreferredSelector(parentNode, true);
 			// getBy((String) sel.get("selectorType"), (String) sel.get("selector"));
@@ -1033,18 +1218,19 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 			// bu.presClick(driver,getBy((String) sel.get("selectorType"), (String)
 			// sel.get("selector")) );
 			Map _options = add_subtrace(parentNode);
-			// _options.put("click", true);
+			 _options.put("click", true);
 			int status = doClick(driver, getBy((String) sel.get("selectorType"), (String) sel.get("selector")),
 					urlValue, true, _options, urls);
 			if (status == 3) {
 				stop_traversing = true;
 			}
-			statsloger.info(urlValue + "," + evname + "," + action + "," + order + "," + status);
+			
 		}
 
 		// if (action.equals(allarea) && repeatNode.isMissingNode()) {
 		if (action.equals(allarea) && norepeat) {
-			// all links in the area click
+			System.out.print( "all links in the area click");
+		
 			Map sel = getPreferredSelector(parentNode, true);
 			// getBy((String) sel.get("selectorType"), (String) sel.get("selector"));
 			int status = doClick(driver, getBy((String) sel.get("selectorType"), (String) sel.get("selector")),
@@ -1052,7 +1238,8 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 			if (status == 3) {
 				stop_traversing = true;
 			}
-			statsloger.info(urlValue + "," + evname + "," + action + "," + order + "," + status);
+			
+
 
 		}
 
@@ -1106,10 +1293,12 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 					multiclickalongwith(parentNode, driver, urlValue, urls);
 					break;
 				case "default":
+					System.out.println("repeat click default exit try");
 					untildefault(parentNode, driver, urlValue, urls);
 					break;
 				default:
-
+					System.out.println("repeat click undefined exit try");
+                    break;
 				}				
 				
 			} // if node

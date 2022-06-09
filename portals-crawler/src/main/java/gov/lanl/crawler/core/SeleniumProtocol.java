@@ -39,8 +39,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.apache.storm.Config;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver.Timeouts;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
@@ -56,6 +59,9 @@ import com.digitalpebble.stormcrawler.protocol.ProtocolResponse;
 import com.digitalpebble.stormcrawler.protocol.selenium.NavigationFilters;
 import com.digitalpebble.stormcrawler.util.ConfUtils;
 
+
+
+
 public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 
 	protected static final org.slf4j.Logger LOG = LoggerFactory.getLogger(SeleniumProtocol.class);
@@ -68,10 +74,6 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 	String host;
 	int port_;
 	String warcdir;
-        String cerdir;
-
-        String warcproxpath;
-        String ppath;
 
 	@Override
 	public void configure(Config conf) {
@@ -81,9 +83,6 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 		host = ConfUtils.getString(conf, "http.proxy.host", "172.17.0.1");
 		port_ = ConfUtils.getInt(conf, "http.proxy.port", 0);
 		warcdir = ConfUtils.getString(conf, "http.proxy.dir", "./warcs");
-                cerdir = ConfUtils.getString(conf, "http.cert.dir", "certs");
-                warcproxpath = ConfUtils.getString(conf, "warcprox.exec.dir","");
-		ppath = ConfUtils.getString(conf, "python.exec.dir","");
 		filters = NavigationFilters.fromConf(conf);
 		drivers = new LinkedBlockingQueue<>();
 		if (ports==null)     {
@@ -117,11 +116,10 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 		// String cmd = "/usr/local/bin/warcprox -b 172.17.0.1 -p 8080 --certs-dir certs
 		// -d warcs -g md5 -v --trace -s 2000000000 > out.txt ";
         String warcproxydir = warcdir + "/output" + pport +".db";
-	ProcessBuilder probuilder = new ProcessBuilder(ppath,warcproxpath+"warcprox", "-b", host, "-p", pport, "--certs-dir", cerdir,
+		ProcessBuilder probuilder = new ProcessBuilder("warcprox", "-b", host, "-p", pport, "--certs-dir", "certs",
 				"-d", warcdir + pport, "-g", "md5", "-v", "--trace", "-s", "8000000000", "--dedup-db-file=/dev/null",
-				"--stats-db-file=/dev/null"); 
+				"--stats-db-file=/dev/null");
 		
-	//ProcessBuilder probuilder = new ProcessBuilder("/bin/bash", "-c", "/warcs/test"+pport+".sh");
 	//	ProcessBuilder probuilder = new ProcessBuilder("warcprox", "-b", host, "-p", pport, "--certs-dir", "certs",
 	//			"-d", warcdir + pport, "-g", "md5", "-v", "--trace", "-s", "1000000", "--dedup-db-file=/dev/null",
 	//			"--stats-db-file=/dev/null");
@@ -129,26 +127,19 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 		
 		try {
 
-		    //File OutputFile = new File(warcdir + "/output" + pport + ".txt");
-			//File directory = new File(warcdir +  pport );
-                        //if (! directory.exists()){
-			//   directory.mkdir();
-			    // If you require it to make the entire directory path including parents,
-			    // use directory.mkdirs(); here instead.
-			//}
+			File OutputFile = new File(warcdir + "/output" + pport + ".txt");
 			probuilder.redirectErrorStream(true);
 			// probuilder.directory(new File(warcdir));
-			//probuilder.redirectOutput(OutputFile);
-			probuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-			probuilder.directory(new File(warcdir));
+			probuilder.redirectOutput(OutputFile);
+
 			Map<String, String> envMap = probuilder.environment();
 
 			// checking map view of environment
-			 for (Map.Entry<String, String> entry : envMap.entrySet()) {
+			// for (Map.Entry<String, String> entry : envMap.entrySet()) {
 			// checking key and value separately
-			 System.out.println("Key = " + entry.getKey() + ", Value = " +
-			 entry.getValue());
-			 }
+			// System.out.println("Key = " + entry.getKey() + ", Value = " +
+			// entry.getValue());
+			// }
 
 			Process p = probuilder.start();
 			p.waitFor(5, TimeUnit.SECONDS);
@@ -192,6 +183,7 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 
 	public ProtocolResponse getProtocolOutput(String url, Metadata metadata) throws Exception {
 		url = url.replace("robots.txt","");
+		//MyScreenRecorder.startRecording("test");
 		System.out.println("in protocol:"+url);
 		Process p = null;
 		Integer iport;
@@ -256,6 +248,8 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 				byte[] content = driver.getPageSource().getBytes();
 				response = new ProtocolResponse(content, 200, metadata);
 			}
+			
+			//MyScreenRecorder.stopRecording();
 			return response;
 		}
 		// catch (Exception e) {
@@ -358,7 +352,7 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 			}
 		}
 		
-		
+		capabilities.setCapability(CapabilityType.TAKES_SCREENSHOT, true);
 		
 		//Proxy proxy = new Proxy();
 		String proxyInfo = host + ":" + pport;
@@ -378,6 +372,11 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 			options.setExperimentalOption("useAutomationExtension", false);
 			//options.addArguments(Arrays.asList("--start-maximized"));
 			options.addArguments("allow-running-insecure-content");
+			
+			
+			HashMap<String, Object> chromePrefs = new HashMap<>();
+			chromePrefs.put("download.prompt_for_download", false);
+			options.setExperimentalOption("prefs", chromePrefs);
          capabilities.setCapability(ChromeOptions.CAPABILITY, options);
 		// number of instances to create per connection
 		// https://github.com/DigitalPebble/storm-crawler/issues/505
@@ -402,7 +401,9 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 			capabilities.setCapability(ChromeOptions.CAPABILITY, options);
 
 		*/	
-			RemoteWebDriver driver = new RemoteWebDriver(new URL(addresses.get(0)), capabilities);
+			 
+			RemoteWebDriver driver = new gov.lanl.crawler.proto.ScreenShotRemoteWebDriver(new URL(addresses.get(0)), capabilities);
+			//RemoteWebDriver driver = new RemoteWebDriver(new URL(addresses.get(0)), capabilities);
 			//driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 			//Timeouts touts = driver.manage().timeouts();
 			//int implicitWait = ConfUtils.getInt(conf, "selenium.implicitlyWait", 0);
@@ -411,7 +412,17 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 			//touts.implicitlyWait(implicitWait, TimeUnit.MILLISECONDS);
 			//touts.pageLoadTimeout(pageLoadTimeout, TimeUnit.MILLISECONDS);
 			//touts.setScriptTimeout(setScriptTimeout, TimeUnit.MILLISECONDS);
+			driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 			System.out.println("returning driver");
+			Capabilities  cap = ((RemoteWebDriver) driver).getCapabilities();
+			String c=driver.getCapabilities().getCapability("version").toString();
+			
+			//String browserName = cap.getBrowserName();
+		    //String browserVersion = (String)cap.getCapability("browserVersion");
+		    //String osName = Platform.fromString((String)cap.getCapability("platformName")).name().toLowerCase();
+            //System.out.println(browserName + browserVersion + "-" + osName);
+ 		    
+			System.out.println("driver version"+c);
 			// drivers.add(driver);
 			return driver;
 			// }

@@ -59,7 +59,7 @@ import com.digitalpebble.stormcrawler.protocol.ProtocolResponse;
 import com.digitalpebble.stormcrawler.protocol.selenium.NavigationFilters;
 import com.digitalpebble.stormcrawler.util.ConfUtils;
 
-import gov.lanl.crawler.proto.MyScreenRecorder;
+//import gov.lanl.crawler.proto.MyScreenRecorder;
 
 
 public abstract class SeleniumProtocol extends AbstractHttpProtocol {

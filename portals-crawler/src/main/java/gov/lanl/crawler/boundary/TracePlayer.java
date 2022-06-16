@@ -22,6 +22,7 @@ import org.archive.util.FileUtils;
 //import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -279,7 +280,7 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 		
 		int status = 0; //somekind of error
 		int retries = 0;
-		final int MAX_STALE_ELEMENT_RETRIES = 3;
+		final int MAX_STALE_ELEMENT_RETRIES = 4;
 		while (true) {
 			try {
 
@@ -287,12 +288,29 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 				//actions.moveToElement(we);
 				//actions.perform();
 				//this is better with svg elements
-				//_Actions builder = new Actions(driver);
+				if (retries==2) {
+					int loc = we.getLocation().getY();
+					  System.out.println("location"+loc);
+					  JavascriptExecutor js = (JavascriptExecutor) driver; 
+					  //js.executeScript("window.scrollTo(0, " + loc + ");"); 
+					  js.executeScript("arguments[0].scrollIntoViewIfNeeded(true);", we);
+					  
+	                  js.executeScript("arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"nearest\"});", we);
+	                 
+	                  // new WebDriverWait(driver, 20).until(ExpectedConditions.elementToBeClickable(by));
+					  js.executeScript("arguments[0].click();", we);
+					  status = 1; 
+					  break;
+				}
+				if (retries==3) {
+					we.sendKeys(Keys.RETURN);
+				}
+				Actions builder = new Actions(driver);
 				//builder.moveToElement(we).click(we);
 				//int height = we.getSize().getHeight();
 			    //int width = we.getSize().getWidth();
 			    //((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", we);
-			   //_ builder.moveToElement(we).click(we).build().perform();
+			    builder.moveToElement(we).click(we).build().perform();
 			    //builder.moveToElement(we).click(we);
 			   // builder.moveByOffset((width/2)+2,(height/2)+2).click();
 				//builder.move_by_offset(x_off, y_off);
@@ -300,19 +318,19 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 				System.out.println("retries" + retries);
 				//_status = 1; //real click
 				//_break;
-				  int loc = we.getLocation().getY();
-				  System.out.println("location"+loc);
-				  JavascriptExecutor js = (JavascriptExecutor) driver; 
+				 //+ int loc = we.getLocation().getY();
+				  //+System.out.println("location"+loc);
+				  //+JavascriptExecutor js = (JavascriptExecutor) driver; 
 				  //js.executeScript("window.scrollTo(0, " + loc + ");"); 
-				  js.executeScript("arguments[0].scrollIntoViewIfNeeded(true);", we);
+				  //+js.executeScript("arguments[0].scrollIntoViewIfNeeded(true);", we);
 				  
-                  js.executeScript("arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"nearest\"});", we);
+                  //+js.executeScript("arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"nearest\"});", we);
                  
                   // new WebDriverWait(driver, 20).until(ExpectedConditions.elementToBeClickable(by));
-				  js.executeScript("arguments[0].click();", we);
+				  //+js.executeScript("arguments[0].click();", we);
 				      
-				  status = 1; 
-				break;
+				 status = 1; 
+				 break;
 				//if (slowmode.equals("true")) {
 					// ((GifWebDriver) gdriver).getGifScreenshotWorker().takeScreenshot();
 					// try {Thread.sleep(100);} catch (InterruptedException ie) {}
@@ -327,7 +345,7 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 				 */
 
 				
-		 	} catch (StaleElementReferenceException e) {
+		 	} catch (Exception e) {
 				if (retries < MAX_STALE_ELEMENT_RETRIES) {
 					retries++;
 					System.out.println("second attempt to click");
@@ -358,9 +376,7 @@ void do_screen(RemoteWebDriver driver) {
 }
 	public int doClick(RemoteWebDriver driver, By by, String url, Boolean goback, Map myoptions,
 			List<SimpleEntry> dummyContent) {
-		//StringBuffer sblog = new StringBuffer();
-		//SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH.mm.ss");
-		int status = 0; //  default error
+			int status = 0; //  default error
 		System.out.println("locator:"+by.toString());
 		List<WebElement> ls = getElementsByLocator(by, driver);
 		
@@ -377,8 +393,9 @@ void do_screen(RemoteWebDriver driver) {
 			}
 			for (i = start; i < ls.size(); i++) {
 				System.out.println("element number:" + i);
-				if (myoptions.containsKey("repeatedclick")&&i>0) {
-					System.out.println("option repited click");
+				//new fix github next button -only one next button
+				if (myoptions.containsKey("repeatedclick")&&i>0&&start==0) {
+					System.out.println("option repeated click");
 					status=1;
 					break;
 				}
@@ -389,6 +406,7 @@ void do_screen(RemoteWebDriver driver) {
 					
 					WebElement we = ls.get(i);
 					//have to refresh
+					//new fix -stale elements
 					we = getElementsByLocatorIndex(by, driver, i);
 					String tagName = print_tag(we);
 					String hr = we.getAttribute("href");
@@ -430,6 +448,14 @@ void do_screen(RemoteWebDriver driver) {
 					 //js.executeScript("window.scrollTo(0, " + loc + ");");
 					clickcount = clickcount + 1;
 					System.out.println(" clicked element number:" + i);
+					if (by.toString().toLowerCase().contains("zip")) {
+					try {
+						Thread.sleep(4000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					}
 					//do_screen(driver);
 					
 				} catch (Exception e) {
@@ -745,22 +771,7 @@ void do_screen(RemoteWebDriver driver) {
 		 SessionId si = driver.getSessionId();
 			String sid = si.toString();
 	
-		//ObjectMapper objectMapper = new ObjectMapper();
-		//String json;
-		//try {
-		//	json = objectMapper.writeValueAsString(parentNode);
-		//	JsonElement je = new JsonParser().parse(json);
-		/*	statsloger.info().field("url",urlValue)
-			.field("func","untilvaluematches")
-			.field("sesid",sid)
-			.field("elementsfound",clickcount_)
-			.field("nodeid",parentNode.path("id").asText()).log();
-			//.field("status",status)
-			//.json("node", je).log() ;*/
-		//} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//}
+		
 		process(parentNode);
 
 	}
@@ -942,20 +953,7 @@ void do_screen(RemoteWebDriver driver) {
 		SessionId si = driver.getSessionId();
 		String sid = si.toString();
 	
-		//try {
-		//	json = objectMapper.writeValueAsString(parentNode);
-		//	JsonElement je = new JsonParser().parse(json);
-		/*	statsloger.info().field("url",urlValue)
-			.field("func","multiclickalongwith")
-			.field("sesid",sid)
-			.field("elementsfound",hmany)
-			.field("status",status)
-			.field("nodeid",parentNode.path("id").asText()).log();*/
-			//.json("node", je).log() ;
-		//} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//}
+		
 		process(parentNode);
 	}
 
@@ -1002,6 +1000,13 @@ void do_screen(RemoteWebDriver driver) {
 			String back_url = driver.getCurrentUrl().toString();
 			System.out.println("howmany" + howmany);
 			System.out.println("cur_url:" + back_url);
+			//driver.manage().timeouts().implicitlyWait(40, TimeUnit.SECONDS);
+			try {
+				Thread.sleep(10000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			if (status == 1) {
 				// if was no click do not go back
 				if (!back_url.equals(urlValue)) {
@@ -1027,20 +1032,7 @@ void do_screen(RemoteWebDriver driver) {
 		SessionId si = driver.getSessionId();
 		String sid = si.toString();
 	
-		//try {
-		//	json = objectMapper.writeValueAsString(parentNode);
-			//JsonElement je = new JsonParser().parse(json);
-			/*statsloger.info().field("url",urlValue)
-			.field("func","clickandback")
-			.field("sesid",sid)
-			.field("elementsfound",howmany)
-			.field("status",status)
-			.field("nodeid",parentNode.path("id").asText()).log(); */
-			//.json("node", je).log() ;
-		//} catch (JsonProcessingException e) {
-		//	// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//}
+		
 		
 		
 	}
@@ -1113,22 +1105,7 @@ void do_screen(RemoteWebDriver driver) {
 		//String json;
 		SessionId si = driver.getSessionId();
 		String sid = si.toString();
-		//String height = (String) js.executeScript("return document.documentElement.scrollHeight");
-		//try {
-		//	json = objectMapper.writeValueAsString(parentNode);
-		//	JsonElement je = new JsonParser().parse(json);
-			/*statsloger.info().field("url",urlValue)
-			.field("func","scroll")			
-			.field("sesid",sid) 
-			//.field("elementsfound",clickcount_)
-			
-			//.field("height",height)
-			.field("nodeid",parentNode.path("id").asText()).log(); */
-			//.json("node", je).log() ;
-		//} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//}
+		
 	}
 
 	public void traverseChildren(JsonNode parentNode, RemoteWebDriver driver, String urlValue, List<SimpleEntry> urls) {
@@ -1173,19 +1150,7 @@ void do_screen(RemoteWebDriver driver) {
 		String action = parentNode.path("actionName").asText();
 		String evname = parentNode.path("name").asText();
 		
-		//try {
-		//	json = objectMapper.writeValueAsString(parentNode);
-		//	JsonElement je = new JsonParser().parse(json);
-			//statsloger.info().field("url",urlValue)
-			//.field("func","traverse")
-			//.field("sesid",id)
-			//.field("action",action)
-			//.field("nodeid",parentNode.path("id").asText()).log();
-			//.json("node", je).log() ;
-		//} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//}
+		
 		
 		
 		sb.append(urlValue + "," + evname + "," + action + "," + order);

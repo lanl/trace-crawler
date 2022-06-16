@@ -59,7 +59,7 @@ import com.digitalpebble.stormcrawler.protocol.ProtocolResponse;
 import com.digitalpebble.stormcrawler.protocol.selenium.NavigationFilters;
 import com.digitalpebble.stormcrawler.util.ConfUtils;
 
-
+import gov.lanl.crawler.proto.MyScreenRecorder;
 
 
 public abstract class SeleniumProtocol extends AbstractHttpProtocol {
@@ -353,31 +353,49 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 		}
 		
 		capabilities.setCapability(CapabilityType.TAKES_SCREENSHOT, true);
-		
+		capabilities.setCapability("chrome.switches", Arrays.asList("--proxy-server=http://"+host+":"+pport));
+		//capabilities.setCapability("chrome.switches", Arrays.asList("--ignore-certificate-errors"));
+
 		//Proxy proxy = new Proxy();
+		//Proxy proxy = new Proxy();
+		//proxy.setAutodetect(false);
+		//proxy.setProxyType(Proxy.ProxyType.MANUAL);
+		//proxy.setHttpProxy("proxyhost:proxyport");
 		String proxyInfo = host + ":" + pport;
-		System.out.println(proxyInfo);
+		//proxy.setHttpProxy(proxyInfo);
+		//System.out.println(proxyInfo);
 		//proxy.setProxyType(Proxy.ProxyType.MANUAL);
 		//proxy.setHttpProxy(proxyInfo).setFtpProxy(proxyInfo).setSocksProxy(proxyInfo).setSslProxy(proxyInfo);
 		//proxy.setSocksVersion(5);
 		//capabilities.setCapability(CapabilityType.PROXY, proxy);
 		 ChromeOptions options = new ChromeOptions();
+		
          //options.addArguments("--proxy-server=socks5://" + host + ":" + pport);
-         options.addArguments("--proxy-server=http://"+host+":"+pport);
-         options.addArguments	("--ignore-certificate-errors"); 
+          options.addArguments("--proxy-server=http://"+host+":"+pport);
+          options.addArguments	("--ignore-certificate-errors"); 
 			options.addArguments("--ignore-ssl-errors");
-			options.addArguments("disable-infobars");
+			options.addArguments("--disable-infobars");
 			options.addArguments("--disable-notifications");
 			options.addArguments("--disable-extenstions");
 			options.setExperimentalOption("useAutomationExtension", false);
 			//options.addArguments(Arrays.asList("--start-maximized"));
-			options.addArguments("allow-running-insecure-content");
+			options.addArguments("--allow-running-insecure-content");
 			
 			
-			HashMap<String, Object> chromePrefs = new HashMap<>();
-			chromePrefs.put("download.prompt_for_download", false);
-			options.setExperimentalOption("prefs", chromePrefs);
+			HashMap<String, Object> prefs = new HashMap<>();
+			 prefs.put("download.prompt_for_download", false);
+			 prefs.put("download.directory_upgrade",true);
+			 prefs.put("download.default_directory",warcdir);
+			 
+			 prefs.put("safebrowsing.enabled",false);
+			// prefs.put("download.extensions_to_open", "application/zip");
+			 prefs.put("profile.default_content_settings.popups", 0);
+			 prefs.put("profile.default_content_setting_values.automatic_downloads",1);
+			
+			options.setExperimentalOption("prefs", prefs);
          capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+         //recent change of selenium
+         capabilities.setCapability("goog:chromeOptions", options);
 		// number of instances to create per connection
 		// https://github.com/DigitalPebble/storm-crawler/issues/505
 		int numInst = ConfUtils.getInt(conf, "selenium.instances.num", 1);
@@ -404,6 +422,10 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 			 
 			RemoteWebDriver driver = new gov.lanl.crawler.proto.ScreenShotRemoteWebDriver(new URL(addresses.get(0)), capabilities);
 			//RemoteWebDriver driver = new RemoteWebDriver(new URL(addresses.get(0)), capabilities);
+			  driver.manage().timeouts().implicitlyWait(25, TimeUnit.SECONDS);
+			  driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
+			  driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS);
+			 
 			//driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
 			//Timeouts touts = driver.manage().timeouts();
 			//int implicitWait = ConfUtils.getInt(conf, "selenium.implicitlyWait", 0);
@@ -412,17 +434,18 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 			//touts.implicitlyWait(implicitWait, TimeUnit.MILLISECONDS);
 			//touts.pageLoadTimeout(pageLoadTimeout, TimeUnit.MILLISECONDS);
 			//touts.setScriptTimeout(setScriptTimeout, TimeUnit.MILLISECONDS);
-			driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+			//driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 			System.out.println("returning driver");
 			Capabilities  cap = ((RemoteWebDriver) driver).getCapabilities();
-			String c=driver.getCapabilities().getCapability("version").toString();
+			//String c=driver.getCapabilities().getCapability("version").toString();
 			
-			//String browserName = cap.getBrowserName();
-		    //String browserVersion = (String)cap.getCapability("browserVersion");
+			String browserName = cap.getBrowserName();
+		    String browserVersion = (String)cap.getCapability("browserVersion");
 		    //String osName = Platform.fromString((String)cap.getCapability("platformName")).name().toLowerCase();
-            //System.out.println(browserName + browserVersion + "-" + osName);
+            System.out.println(browserName + browserVersion );
  		    
-			System.out.println("driver version"+c);
+ 		    System.out.print(driver.getCapabilities().toString());
+			//System.out.println("driver version"+c);
 			// drivers.add(driver);
 			return driver;
 			// }

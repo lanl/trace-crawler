@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+ tracer-browser:
+    #build: ./docker-selenium/
+    image: selenium/standalone-chrome:102.0
+    shm_size: 6g
+    hostname: chrome
+    ports:
+      - "4444:4444"

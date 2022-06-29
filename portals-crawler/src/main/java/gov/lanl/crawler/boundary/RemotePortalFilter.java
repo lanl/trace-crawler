@@ -22,9 +22,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
-import org.apache.log4j.Logger;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.SessionId;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
 import com.digitalpebble.stormcrawler.Metadata;
@@ -33,6 +33,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+//import com.savoirtech.logging.slf4j.json.LoggerFactory;
+//import com.savoirtech.logging.slf4j.json.logger.JsonLogger;
 
 import gov.lanl.crawler.core.StatusUpdaterBolt;
 
@@ -52,8 +54,9 @@ public class RemotePortalFilter extends NavigationFilter {
 	//String partialexit = null;
 	StatusUpdaterBolt su = null;
 	String nosubtrace = "false";
-	static Logger statsloger = Logger.getLogger("stats");
-	
+	//static Logger statsloger = Logger.getLogger("stats");
+	// com.savoirtech.logging.slf4j.json.logger.Logger statsloger =  LoggerFactory.getLogger("JSONLogger");
+	    
 	TraceUtils bu;
 	String slowmode;
 	@SuppressWarnings("rawtypes")
@@ -142,7 +145,8 @@ public class RemotePortalFilter extends NavigationFilter {
 			}
 		}
 		
-		
+		//JsonLogger a = statsloger.info().field("url",urlValue);
+	
 		TracePlayer trplay = new TracePlayer(slowmode,driver);
 		EventFiringWebDriver efd = new EventFiringWebDriver(driver);
 		efd.register(trplay);
@@ -204,6 +208,17 @@ public class RemotePortalFilter extends NavigationFilter {
 		 * try { recorder.stop(); } catch (Exception e) { // TODO Auto-generated catch
 		 * block e.printStackTrace(); }
 		 */
+		SessionId si = driver.getSessionId();
+		String sid = si.toString();
+			//statsloger.info().
+			//field("url",urlValue)
+			//a.field("func","processlinks")			
+			//.field("sesid",sid)
+			//.field("filter",filter)
+			//.field("linksfound",urls.size()).log();
+			
+			
+		
 		if (tableName != null) {
 			urls.forEach(link -> processLinks((SimpleEntry) link, driver, event, su));
 		}
@@ -230,6 +245,11 @@ public class RemotePortalFilter extends NavigationFilter {
 			String strace = (String) entry.getValue();
 			if (strace == null) {
 				driver.get(_url);
+				String redir_url = driver.getCurrentUrl();
+				if (!redir_url.equals(_url)) {
+				driver.navigate().to(redir_url);
+				System.out.println(redir_url);
+				}
 				bu.scroll(driver);
 				System.out.println(_url);
 			} else {

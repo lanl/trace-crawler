@@ -59,7 +59,7 @@ import com.digitalpebble.stormcrawler.protocol.ProtocolResponse;
 import com.digitalpebble.stormcrawler.protocol.selenium.NavigationFilters;
 import com.digitalpebble.stormcrawler.util.ConfUtils;
 
-import gov.lanl.crawler.proto.MyScreenRecorder;
+//import gov.lanl.crawler.proto.MyScreenRecorder;
 
 
 public abstract class SeleniumProtocol extends AbstractHttpProtocol {
@@ -117,7 +117,9 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 		// -d warcs -g md5 -v --trace -s 2000000000 > out.txt ";
         String warcproxydir = warcdir + "/output" + pport +".db";
 		ProcessBuilder probuilder = new ProcessBuilder("warcprox", "-b", host, "-p", pport, "--certs-dir", "certs",
-				"-d", warcdir + pport, "-g", "md5", "-v", "--trace", "-s", "8000000000", "--dedup-db-file=/dev/null",
+				"-d", warcdir + pport, "-g", "md5", "-v", "--trace", "-s", "8000000000", 
+				//"--dedup-db-file=/dev/null",
+				"--dedup-db-file="+warcproxydir,
 				"--stats-db-file=/dev/null");
 		
 	//	ProcessBuilder probuilder = new ProcessBuilder("warcprox", "-b", host, "-p", pport, "--certs-dir", "certs",
@@ -290,6 +292,11 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 				metadata.addValue("selSessionDur", String.valueOf(dur));
 				metadata.addValue("proxyDur", String.valueOf(dur0));
 				System.out.println("added meta");
+			    File file
+		            = new File(warcdir + "/output" + iport +".db");
+				 file.delete();
+			           
+			        
 				ports.put(iport);
 				
 			}

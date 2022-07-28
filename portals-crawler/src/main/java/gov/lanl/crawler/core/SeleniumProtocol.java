@@ -387,6 +387,7 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 			options.setExperimentalOption("useAutomationExtension", false);
 			//options.addArguments(Arrays.asList("--start-maximized"));
 			options.addArguments("--allow-running-insecure-content");
+			options.addArguments("--disable-features=OptimizationGuideModelDownloading,OptimizationHintsFetching,OptimizationTargetPrediction,OptimizationHints");
 			
 			
 			HashMap<String, Object> prefs = new HashMap<>();

@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.openqa.selenium.JavascriptExecutor;
@@ -245,11 +246,15 @@ public class RemotePortalFilter extends NavigationFilter {
 			String strace = (String) entry.getValue();
 			if (strace == null) {
 				driver.get(_url);
+				
 				String redir_url = driver.getCurrentUrl();
 				if (!redir_url.equals(_url)) {
+					//Thread.sleep(1000);
+					TimeUnit.SECONDS.sleep(1);
 				driver.navigate().to(redir_url);
 				System.out.println(redir_url);
 				}
+				TimeUnit.SECONDS.sleep(1);
 				bu.scroll(driver);
 				System.out.println(_url);
 			} else {

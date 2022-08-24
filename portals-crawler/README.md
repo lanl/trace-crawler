@@ -176,5 +176,27 @@ To apply navigation filter(trace) with automatic url matching by  regular expres
 $ mvn clean package
 ```
 
+### Test  trace using  desktop chrome 
+
+* install chrome driver, see https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver  or http://chromedriver.chromium.org/downloads
+* select chrome driver version matching your desktop chrome browser.
+* clone stormarchiver repository   git clone https://github.com/lanl/trace-crawler/
+* go to the portals-crawler directory
+```sh
+cd portals-crawler
+```
+* java 1.8 required ; adjust JAVA_HOME in tracetest.sh if it is  not working for you
+* change directory at tracetest.sh  to directory where is your driver installed.
+* compile using maven to produce stormcapture-0.2.jar   in ./target directory 
+```sh
+mvn clean install -f pomdemo.xml
+    
+```
+start the trace replay
+```sh
+  ./tracetest.sh https://www.heise.de/  file:///Users/Lyudmila/stormarchiver/bihiyolgbh.json
+  
+```
+ 
 
 

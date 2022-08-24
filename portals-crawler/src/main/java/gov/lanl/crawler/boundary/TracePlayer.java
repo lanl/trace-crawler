@@ -433,7 +433,21 @@ void do_screen(RemoteWebDriver driver) {
 								System.out.println("element url" + hr);
 								dummyContent.add(new SimpleEntry(hr, subtrace));
 								clickcount = clickcount + 1;
-								
+								//if it all links in area collect all children hrefs
+								if (i==0) {
+									List<WebElement> other = we.findElements(by.tagName("a"));
+									//List<WebElement> re = we.findElements(By.xpath("//*[@href]"));
+									int j=0;
+									for (j = 0; j < other.size(); j++) 
+									{
+									String h = other.get(j).getAttribute("href");
+									System.out.println("children:"+h);
+									if (slowmode.equals("true")) {
+										highLighterMethod(driver, other.get(i));
+									}
+									dummyContent.add(new SimpleEntry(h, subtrace));
+									}
+								}
 								continue;
 							}
 						}

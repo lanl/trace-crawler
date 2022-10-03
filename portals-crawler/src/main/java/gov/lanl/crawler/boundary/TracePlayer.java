@@ -377,6 +377,12 @@ void do_screen(RemoteWebDriver driver) {
 	public int doClick(RemoteWebDriver driver, By by, String url, Boolean goback, Map myoptions,
 			List<SimpleEntry> dummyContent) {
 			int status = 0; //  default error
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		System.out.println("locator:"+by.toString());
 		List<WebElement> ls = getElementsByLocator(by, driver);
 		

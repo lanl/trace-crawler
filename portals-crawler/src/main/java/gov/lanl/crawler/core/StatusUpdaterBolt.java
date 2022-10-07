@@ -483,10 +483,11 @@ public class StatusUpdaterBolt extends AbstractStatusUpdaterBolt {
 		refreshConnection();
 		String eventurl = "";
 		// the mysql insert statement
-		String query = tableName + " (url, status, nextfetchdate, metadata, bucket, host,id,event_id)"
+		//changed oct5 2022
+		String query1 = tableName + " (url, status, nextfetchdate, metadata, bucket, host,id,event_id)"
 				+ " values (?, ?, ?, ?, ?, ?,md5(?),md5(?))";
 
-		String query1 = tableName + " (url, status, nextfetchdate, metadata, bucket, host,id,event_id)"
+		String query = tableName + " (url, status, nextfetchdate, metadata, bucket, host,id,event_id)"
 				+ " values (?, ?, ?, ?, ?, ?,md5(?),?)";
 
 		StringBuffer mdAsString = new StringBuffer();

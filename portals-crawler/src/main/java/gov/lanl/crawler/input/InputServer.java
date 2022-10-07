@@ -26,9 +26,14 @@ import org.glassfish.grizzly.threadpool.GrizzlyExecutorService;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
 import org.glassfish.grizzly.utils.ArraySet;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 //import org.glassfish.jersey.servlet.ServletContainer;
+
+import gov.lanl.crawler.resource.InitMsgServlet;
+import gov.lanl.crawler.resource.ResultsResource;
+import gov.lanl.crawler.resource.SubmitResource;
 
 //import gov.lanl.crawler.resource.GrabResource;
 //import gov.lanl.crawler.resource.InboxResource;
@@ -98,7 +103,11 @@ public enum InputServer {
 			//myset.add(GrabResource.class);
 			//myset.add(InboxResource.class);
 			//myset.add(TransitResource.class);
+			myset.add(ResultsResource.class);
+			myset.add(MultiPartFeature.class);
 			
+		    myset.add(SubmitResource.class);
+		    
 			ResourceConfig rc = new ResourceConfig().registerClasses(myset);
 					//register(InboxResource.class).register(ESAPIResource.class);
 					//.register(AcceptMessageResource.class);
@@ -109,7 +118,7 @@ public enum InputServer {
 			//setThreadLimits(prop);
 			// Initialize and register Jersey Servlet
 			WebappContext context = new WebappContext("WebappContext", JERSEY_SERVLET_CONTEXT_PATH);
-			//context.addListener(InitMsgServlet.class);
+			context.addListener(InitMsgServlet.class);
 			createDefaultServlet(context,sdir);
 			FilterRegistration registration = context.addFilter("ServletContainer", ServletContainer.class);
 			registration.setInitParameter("javax.ws.rs.Application", ResourceConfig.class.getName());

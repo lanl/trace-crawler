@@ -34,7 +34,7 @@ import com.digitalpebble.stormcrawler.sql.Constants;
 
 import gov.lanl.crawler.input.InputServer;
 
-@Path("/capture/results")
+@Path("/results")
 
 public class ResultsResource {
 	private Connection connection;
@@ -47,6 +47,7 @@ public class ResultsResource {
 	static String navhtml;
 	private static String warcbaseurl;
 	private static String warcfilesdir;
+	private static String wabacbase = "https://timetravel.mementoweb.org/wabac/index.html?coll_warc=warcs/";
 	static {
 
 		// new driver can do without it
@@ -60,15 +61,18 @@ public class ResultsResource {
 		navhtml = read_template("./templates/nav.html");
 		warcbaseurl = (String) conf.get("warcbaseurl");
 		warcfilesdir = (String) conf.get("warcfilesdir");
+		wabacbase=(String) conf.get("wabacurl");
 	}
 
 	@GET
-	public Response GetResults(@Context UriInfo ui, InputStream stream) {
+	public Response GetResults() {
      System.out.println("in get");
      String html_r =reshtml_tmpl.replace("{{ NAVBAR }}", navhtml);
-     System.out.println(html_r);
-		String rows = compose_result();
-		System.out.println("rows:"+rows);
+     //System.out.println(html_r);
+		String rows = compose_result("fetched")+compose_result("discovered");
+		
+		
+		//System.out.println("rows:"+rows);
 		 html_r = html_r.replace("{{ RESULT_ROWS }}", rows);
 		
 		try {
@@ -83,63 +87,130 @@ public class ResultsResource {
 		return r.build();
 	}
 
-	public String compose_result() {
+	public String compose_result(String status) {
 		StringBuilder rows = new StringBuilder();
-		Map<String, String> hmap = select_fetched();
+		Map<String, String> hmap = select_fetched(status);
 		for (String url : hmap.keySet()) {
 			String meta = hmap.get(url);
 			String[] fields = meta.split("\t", -1);
 			String warcs = "";
 			String trace = "";
 			String ldate = "";
-
+            String _status="";
+            String cdate="";
+            String jid="";
+            
 			for (int i = 0; i < fields.length; ++i) {
-				System.out.println("fields:" + fields[i]);
-				if (fields[i].startsWith("warcs")) {
+				//System.out.println("fields:" + fields[i]);
+				/*if (fields[i].startsWith("warcs")) {
 					warcs = fields[i];
 					warcs = warcs.replaceAll("warcs=", "");
+				}*/
+				
+				if (fields[i].startsWith("warc_file")) {
+					warcs = fields[i];
+					warcs = warcs.replaceAll("warc_file=", "");
+					//System.out.println(warcs);
 				}
+				
+				if (fields[i].startsWith("trace_url")) {	
+					
+					trace = fields[i];
+					trace = trace.replaceAll("trace_url=", "");
+				}
+                if (fields[i].startsWith("status")) {	
+					
+					_status = fields[i];
+					_status = _status.replaceAll("status=", "");
+				}
+				
+				/*
 				if (fields[i].startsWith("trace")) {
+					
 					trace = fields[i];
 					trace = trace.replaceAll("trace=", "");
 				}
+				*/
 				if (fields[i].startsWith("lastProcessedDate")) {
 					ldate = fields[i];
 					ldate = ldate.replaceAll("lastProcessedDate=", "");
 				}
+				if (fields[i].startsWith("reqdate")) {
+					ldate = fields[i];
+					ldate = ldate.replaceAll("reqdate=", "");
+				}
+				if (fields[i].startsWith("capdate")) {
+					cdate = fields[i];
+					cdate = cdate.replaceAll("capdate=", "");
+				}
+				if (fields[i].startsWith("jid")) {
+					jid = fields[i];
+					jid = jid.replaceAll("jid=", "");
+				}
 			}
-			rows.append(new_row_tmpl.replace("{}","table-success"));
+			if (status.equals("discovered")) {
+				rows.append(new_row_tmpl.replace("{}","table-warning")); 
+			}
+			else {
+			rows.append(new_row_tmpl.replace("{}","table-success")); }
+			
 			String a = row_tmpl.replace("{}","col-2");
 			String b = a_tmpl.replaceAll(Pattern.quote("{}"), ldate);
 			a = a.replace("{1}", b);
-			System.out.println(a);
+			//System.out.println(a);
 			rows.append(a);
-			a = row_tmpl.replace("{}","col-4");
-			b = a_tmpl.replaceAll(Pattern.quote("{}"), url);
-			a = a.replace("{1}", b);
-			System.out.println(a);
+			 a = row_tmpl.replace("{}","col-1");
+			 b = a_tmpl.replaceAll(Pattern.quote("{}"), _status);
+			 a = a.replace("{1}", b);
+			//System.out.println(a);
 			rows.append(a);
-			a = row_tmpl.replace("{}","col-4");
-			b = a_tmpl.replaceAll(Pattern.quote("{}"), trace);
-			a = a.replace("{1}", b);
-			System.out.println(a);
+			 a = row_tmpl.replace("{}","col-1");
+			 b = a_tmpl.replaceAll(Pattern.quote("{}"), jid);
+			 a = a.replace("{1}", b);
+			//System.out.println(a);
 			rows.append(a);
 			a = row_tmpl.replace("{}","col-2");
-			b = a_tmpl.replaceAll(Pattern.quote("{}"), warcbaseurl + warcs);
+			b = a_tmpl.replaceAll(Pattern.quote("{}"), url);
 			a = a.replace("{1}", b);
-			System.out.println(a);
+			//System.out.println(a);
 			rows.append(a);
+			a = row_tmpl.replace("{}","col-2");
+			b = a_tmpl.replaceAll(Pattern.quote("{}"), trace);
+			a = a.replace("{1}", b);
+			//System.out.println(a);
+			rows.append(a);
+			a = row_tmpl.replace("{}","col-2");
+			String w="";
+			if (!warcs.equals("")) { w= warcbaseurl + warcs;};
+			String wb="";
+			if (!warcs.equals("")) { wb= wabacbase + warcs;};
+			b = a_tmpl.replaceAll(Pattern.quote("{}"), warcs);
+			a = a.replace("{1}", b);
+			//System.out.println(a);
+			rows.append(a);
+			a = row_tmpl.replace("{}","col-2");
+			b = a_tmpl.replaceAll(Pattern.quote("{}"), wb);
+			a = a.replace("{1}", b);
+			rows.append(a);
+			
 			rows.append("</tr>");
 		}
 		return rows.toString();
 	}
 
-	public Map select_fetched() {
+	public Map select_fetched(String stat) {
 		prepare(conf);
 		ResultSet rs2 = null;
 		Statement st2 = null;
-		String query2 = "SELECT url, status, metadata, nextfetchdate  FROM  urls ";
-		query2 += " WHERE status='FETCHED'  ;";
+		//String query2 = "SELECT url, status, metadata, nextfetchdate  FROM  urls ";
+		String query2 = "SELECT event_id, url, trace_url,status, IFNULL(meta,'') as meta, reqdate, IFNULL(capdate,'') as capdate,"
+				+ "  IFNULL(warc_file,'') as warc_file FROM  input_jobs ";
+		if (stat.equals("discovered")) {
+			query2 += " WHERE status='DISCOVERED' and reqdate >= DATE_ADD(CURDATE(), INTERVAL -5 DAY)  ;";
+		}else {
+		
+		query2 += " WHERE status not in ('DISCOVERED')  and reqdate >= DATE_ADD(CURDATE(), INTERVAL -5 DAY) ;";
+		}
 		System.out.println(query2);
 		Map result = new HashMap();
 		try {
@@ -149,15 +220,31 @@ public class ResultsResource {
 
 			while (rs2.next()) {
 				String status = rs2.getString("status");
-				System.out.println("status" + status);
-				String metadata = rs2.getString("metadata");
+				
+				//System.out.println("status" + status);
+				String metadata = rs2.getString("meta");
+				String turl = rs2.getString("trace_url");
+				String reqdate = rs2.getString("reqdate");
+				String capdate = rs2.getString("capdate");
+				String jid = rs2.getString("event_id");
+				String warc_file = rs2.getString("warc_file");
+				metadata = metadata+ "\t"+"status="+status;
+				metadata = metadata+ "\t"+"trace_url="+turl;
+				metadata = metadata+ "\t"+"reqdate="+reqdate;
+				metadata = metadata+ "\t"+"capdate="+capdate;
+				metadata = metadata+ "\t"+"jid="+jid;
+				
+				metadata = metadata+ "\t"+"warc_file="+warc_file;
+				
+				
 				String url = rs2.getString("url");
-				pdate = rs2.getString("nextfetchdate") + 'Z';
+				pdate = rs2.getString("capdate") + 'Z';
 				pdate = pdate.replaceFirst(" ", "T");
-				System.out.println("published" + pdate);
-				System.out.println("url" + url);
+				//System.out.println("published" + pdate);
+				//System.out.println("url" + url);
 				System.out.println("metadata" + metadata);
 				result.put(url, metadata);
+				
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -180,7 +267,7 @@ public class ResultsResource {
 	 * 
 	 * String fileContent = contentBuilder.toString(); return fileContent; }
 	 */
-	private static String read_template(String profileFile) {
+	public static String read_template(String profileFile) {
 
 		StringBuffer sb = new StringBuffer();
 		try {
@@ -202,7 +289,7 @@ public class ResultsResource {
 			e.printStackTrace();
 		}
 
-		System.out.println(sb.toString());
+		//System.out.println(sb.toString());
 		return sb.toString();
 	}
 
@@ -228,7 +315,7 @@ public class ResultsResource {
 		return sb.toString();
 	}
 
-	public void prepare(Map stormConf) {// TopologyContext context,
+	public  void prepare(Map stormConf) {// TopologyContext context,
 		tableName = (String) stormConf.get(Constants.MYSQL_TABLE_PARAM_NAME);
 		//System.out.println("table:" + tableName);
 		try {

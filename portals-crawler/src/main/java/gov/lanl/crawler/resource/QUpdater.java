@@ -104,9 +104,11 @@ public class QUpdater extends Thread {
 		            	  if (warcs.size()>1) {
 		      			    warcs = merge(result);
 		      			   }
+		            	String warc="";
+		            	if (warcs.size()>0) {
 		            	 Map m= (Map) warcs.get(0);
-		            			String warc= (String) m.get("href");
-		            	  updateJob(event, status, metadata, warc);
+		            	 warc= (String) m.get("href");}
+		            	updateJob(event, status, metadata, warc);
 		              }
 			}
 			}

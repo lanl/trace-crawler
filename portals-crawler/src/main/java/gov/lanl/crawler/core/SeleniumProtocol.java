@@ -428,8 +428,8 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 
 		*/	
 			 
-			RemoteWebDriver driver = new gov.lanl.crawler.proto.ScreenShotRemoteWebDriver(new URL(addresses.get(0)), capabilities);
-			//RemoteWebDriver driver = new RemoteWebDriver(new URL(addresses.get(0)), capabilities);
+			//RemoteWebDriver driver = new gov.lanl.crawler.proto.ScreenShotRemoteWebDriver(new URL(addresses.get(0)), capabilities);
+			  RemoteWebDriver driver = new RemoteWebDriver(new URL(addresses.get(0)), capabilities);
 			  driver.manage().timeouts().implicitlyWait(25, TimeUnit.SECONDS);
 			  driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
 			  driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS);

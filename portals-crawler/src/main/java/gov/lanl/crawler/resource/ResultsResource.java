@@ -90,8 +90,8 @@ public class ResultsResource {
 	public String compose_result(String status) {
 		StringBuilder rows = new StringBuilder();
 		Map<String, String> hmap = select_fetched(status);
-		for (String url : hmap.keySet()) {
-			String meta = hmap.get(url);
+		for (String id : hmap.keySet()) {
+			String meta = hmap.get(id);
 			String[] fields = meta.split("\t", -1);
 			String warcs = "";
 			String trace = "";
@@ -99,6 +99,7 @@ public class ResultsResource {
             String _status="";
             String cdate="";
             String jid="";
+            String url="";
             
 			for (int i = 0; i < fields.length; ++i) {
 				//System.out.println("fields:" + fields[i]);
@@ -117,6 +118,10 @@ public class ResultsResource {
 					
 					trace = fields[i];
 					trace = trace.replaceAll("trace_url=", "");
+				}
+                if (fields[i].startsWith("url")) {	
+					url = fields[i];
+					url = url.replaceAll("url.path=", "");
 				}
                 if (fields[i].startsWith("status")) {	
 					
@@ -183,7 +188,9 @@ public class ResultsResource {
 			String w="";
 			if (!warcs.equals("")) { w= warcbaseurl + warcs;};
 			String wb="";
-			if (!warcs.equals("")) { wb= wabacbase + warcs;};
+			if (!warcs.equals("")) { 
+				String f = warcs.replace(warcbaseurl, "");
+				wb= wabacbase + f;};
 			b = a_tmpl.replaceAll(Pattern.quote("{}"), warcs);
 			a = a.replace("{1}", b);
 			//System.out.println(a);
@@ -243,7 +250,7 @@ public class ResultsResource {
 				//System.out.println("published" + pdate);
 				//System.out.println("url" + url);
 				System.out.println("metadata" + metadata);
-				result.put(url, metadata);
+				result.put(jid, metadata);
 				
 			}
 		} catch (SQLException e) {

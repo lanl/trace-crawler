@@ -311,6 +311,13 @@ public class TracePlayer extends AbstractWebDriverEventListener {
 			    //int width = we.getSize().getWidth();
 			    //((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", we);
 			    builder.moveToElement(we).click(we).build().perform();
+			    JavascriptExecutor js = (JavascriptExecutor) driver; 
+				   // Boolean v= (Boolean) js.executeScript("arguments[0].parentElement.classList.contains('disabled')",we);
+				    WebElement parentElement = (WebElement)js.executeScript("return arguments[0].parentNode;", we);
+				    String pclass=parentElement.getAttribute("class");
+				    System.out.println("retries" + retries);
+				    System.out.println("disable class:"+pclass);
+				    if (pclass.contains("disabled")) { status=0; break;}
 			    //builder.moveToElement(we).click(we);
 			   // builder.moveByOffset((width/2)+2,(height/2)+2).click();
 				//builder.move_by_offset(x_off, y_off);
@@ -813,6 +820,7 @@ void do_screen(RemoteWebDriver driver) {
 			tn = tn + ":not([disabled])";
 		}
 		if (locatortype.equals("XPath")) {
+			//tn = tn + "[not(@disabled) and //*[not(parent::*[@disabled])]";
 			tn = tn + "[not(@disabled)]";
 		}
 		by = getBy(locatortype, tn);
@@ -1218,6 +1226,7 @@ void do_screen(RemoteWebDriver driver) {
 		
 			Map sel = getPreferredSelector(parentNode, true);
 			// getBy((String) sel.get("selectorType"), (String) sel.get("selector"));
+			
 			int status = doClick(driver, getBy((String) sel.get("selectorType"), (String) sel.get("selector")),
 					urlValue, true, add_subtrace(parentNode), urls);
 			if (status == 3) {

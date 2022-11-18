@@ -1226,9 +1226,9 @@ void do_screen(RemoteWebDriver driver) {
 		
 			Map sel = getPreferredSelector(parentNode, true);
 			// getBy((String) sel.get("selectorType"), (String) sel.get("selector"));
-			
+			Map _options = (Map) new HashMap();
 			int status = doClick(driver, getBy((String) sel.get("selectorType"), (String) sel.get("selector")),
-					urlValue, true, add_subtrace(parentNode), urls);
+					urlValue, true, _options, urls);
 			if (status == 3) {
 				stop_traversing = true;
 			}

@@ -156,6 +156,9 @@ public class ResultsResource {
 			if (status.equals("discovered")) {
 				rows.append(new_row_tmpl.replace("{}","table-warning")); 
 			}
+			else if (_status.contains("ERROR")) {
+				rows.append(new_row_tmpl.replace("{}","table-danger")); 
+			}
 			else {
 			rows.append(new_row_tmpl.replace("{}","table-success")); }
 			

@@ -29,6 +29,22 @@ CREATE TABLE `urls` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+DROP TABLE IF EXISTS `input_jobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `input_jobs` (
+  `event_id` char(32) DEFAULT NULL,
+  `reqdate` datetime DEFAULT NULL,
+  `url` varchar(512) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `trace_url` varchar(255) DEFAULT NULL,
+  `id` char(32) DEFAULT NULL,
+  `meta` text,
+  `capdate` datetime DEFAULT NULL,
+  `status` varchar(16) DEFAULT NULL,
+  `warc_file` varchar(255) DEFAULT NULL,
+  UNIQUE KEY `event_id` (`event_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 
 //GRANT ALL PRIVILEGES ON urls TO 'cache'@'localhost' IDENTIFIED BY  'plenty' WITH GRANT OPTION;

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="60" >
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Tracer Capture Service Results Page</title>
+    <style>
+html,
+body {
+  height: 100%;
+  /*background-color: #333;*/
+}
+body {
+  display: -ms-flexbox;
+  display: flex;
+  color: #333;
+    margin: 0 auto;
+}
+.cover .btn-lg {
+  padding: .75rem 1.25rem;
+  font-weight: 700;
+}
+.mastfoot {
+  color: rgba(255, 255, 255, .5);
+}
+
+.row {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    margin-right: 0;
+    margin-left: 0;
+}
+.row .row {
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+.bg-completed {
+    background-color: #c2f5ce;
+    color: #333;
+}
+.bg-waiting {
+    background-color: #f5e5b8;
+    color: #333;
+}
+.navbar {
+    min-height: 60px;
+}
+    </style>
+</head>
+
+<body class="text-center">
+
+
+<div class="container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    {{ NAVBAR }}
+    <main role="main">
+    <p class="lead">
+        This page lists the URLs, traces, and the captured WARC files that were submitted today. 
+    </p>
+        <table class="table" style="table-layout: fixed; word-wrap: break-word;">
+            <thead>
+            <tr class="d-flex">
+            <th scope="col" class="col-2">Request/Capture Date</th>
+            <th scope="col" class="col-2">Status</th>
+            <th scope="col" class="col-2">Request Id</th>
+            <th scope="col" class="col-4">Requested URL</th>
+            <th scope="col" class="col-4">Trace Used</th>
+            <th scope="col" class="col-2">WARC Files</th>
+            <th scope="col" class="col-2"> Open WARC</th>
+            </tr>
+            </thead>
+        <tbody>
+        {{ RESULT_ROWS }}
+        </tbody>
+        </table>
+    </main>
+    <footer class="mastfoot mt-auto bg-dark">
+        <div class="inner">
+            <p><a style="color:#fff;" href="http://tracer.mementoweb.org/">The Memento Tracer Project</a></p>
+        </div>
+    </footer>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+</body>
+<html>

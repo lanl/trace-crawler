@@ -73,7 +73,8 @@ config:
 
   #selenium.addresses: "http://172.17.0.1:4444/wd/hub"
   #selenium.addresses: "http://localhost:4444/wd/hub"
-  selenium.addresses: "http://tracer-browser:4444/wd/hub"
+  #selenium.addresses: "http://tracer-browser:4444/wd/hub"
+  selenium.addresses: "http://tracer-browser:4444/"
   selenium.capabilities: {MaxInstances: 50, takesScreenshot: false,unexpectedAlertBehaviour: accept, loadImages: true, javascriptEnabled: true,browserName : chrome,chromeOptions: {args: ['user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36']},version : 3.11.0-californium} 
  # selenium.instances.num: 1  
  # selenium.setScriptTimeout: 1000

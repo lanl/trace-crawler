@@ -32,12 +32,12 @@ config:
   # these are to keep in urls table in metadata column
   metadata.persist:
   # - _redirTo
-  # - error.cause
+   - error.cause
   # - error.source
   # - isSitemap
   # - isFeed
    - warcs
-  # - event
+   - event
    - url.path 
    - trace
    - filter

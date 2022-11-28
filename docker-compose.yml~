@@ -86,8 +86,8 @@ services:
   tracer-db:
     image: mysql/mysql-server:5.7
     container_name: tracer-db
-    #ports:
-     # - 2306:3306
+    ports:
+      - 3306:3306
     environment:
       MYSQL_DATABASE: "portals"
       MYSQL_USER: "cache"

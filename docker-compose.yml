@@ -101,7 +101,8 @@ services:
 
 
   tracer-browser:
-    build: ./docker-selenium/
+    #build: ./docker-selenium/
+    image: selenium/standalone-chrome:102.0
     ports:
       - "4442:4444"
     networks:

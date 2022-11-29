@@ -36,8 +36,10 @@ change directories with your project directory: location /trace
  sudo service nginx start
 ```
 # change hostname in my.properties at ../portals-crawler/demo/
-#start demo server
+# change projet dir in start.sh at ../portals-crawler/demo/
 
+#start demo server
+nohup start.sh > out.txt &
 
 
  

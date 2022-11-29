@@ -43,10 +43,10 @@ change directories with your project directory: location /trace
 ```
 ## changing permissions of directories where static files will reside
 ** Nginx needs to have read permission the files that should be served AND have execute permission in each of the parent directories along the path from the root to the served files.**
-
+``` sh
 sudo chmod 751 -R  <dirofproject>
 sudo systemctl restart nginx
-
+```
 
 
 

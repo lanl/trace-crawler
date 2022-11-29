@@ -2,7 +2,7 @@
 ## Installation steps
 # git clone trace-crawler repo
 ```
-cd </home/ludab>
+cd </dirofproject/>
 git clone https://github.com/lanl/trace-crawler/
 ```
 # Compile the trace-crawler
@@ -22,6 +22,12 @@ First we launch all components:
 cd ./trace-crawler
 docker-compose -f docker-compose.yaml up --build  --remove-orphans
 ```
+# change hostname in my.properties at ../portals-crawler/demo/
+# change project dir in start.sh at ../portals-crawler/demo/
+
+#start demo server
+nohup start.sh > out.txt &
+
 # Install nginx and copy ../portals-crawler/demo/config/tracershow.conf to /etc/nginx/conf.d
 ``` sh
 Adjust the config to your own hostname
@@ -29,17 +35,19 @@ change root directive with your project directory
 change access_log to your location (create new directory to keep your nginx logs) 
 change directories with your project directory: location /trace 
                                                 location /capture/warc 
-                           </home/ludab>/trace-crawler/traces
+                           </dirofproject>/trace-crawler/traces
 ```
 #start nginx
 ``` sh
  sudo service nginx start
 ```
-# change hostname in my.properties at ../portals-crawler/demo/
-# change projet dir in start.sh at ../portals-crawler/demo/
+# changing permissions of directories where static files will reside
+** Nginx needs to have read permission the files that should be served AND have execute permission in each of the parent directories along the path from the root to the served files.**
 
-#start demo server
-nohup start.sh > out.txt &
+sudo chmod 751 -R  <dirofproject>
+sudo systemctl restart nginx
+
+
 
 
  

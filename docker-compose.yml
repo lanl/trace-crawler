@@ -113,7 +113,7 @@ services:
     container_name: tracer-archiver
     environment:
      # WARC_PROXY: http://storm-supervisor:8050
-      SELENIUM_ADDRESS: "http://tracer-browser:4444/wd/hub"
+      SELENIUM_ADDRESS: "http://tracer-browser:4444/"
       DB_ADDRESS: http://tracer-db:3306
     command: /bin/bash
     depends_on:

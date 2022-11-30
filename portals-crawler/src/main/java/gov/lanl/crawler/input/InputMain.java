@@ -39,7 +39,7 @@ public class InputMain {
 		 System.out.println(String.format("Jersey app started with WADL available at "
                  + "%sapplication.wadl\nTry out %stest\nHit enter to stop it...",
                  baseUri, baseUri));
-	         System.in.read();
+	        // System.in.read();
 	 }
 	 finally {
          InputServer.INSTANCE.stopServer();

@@ -1,14 +1,18 @@
 package gov.lanl.crawler.resource;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -62,13 +66,38 @@ public class SubmitResource {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		indexhtml_tmpl = ResultsResource.read_template("./templates/index.html");
-		navhtml = ResultsResource.read_template("./templates/nav.html");
+		indexhtml_tmpl = read_template("./templates/index.html");
+		navhtml = read_template("./templates/nav.html");
 		tracebaseurl = (String) conf.get("tracebaseurl");
 		tracedir = (String) conf.get("tracedir");
 	}
 	
-	
+	public static String read_template(String profileFile) {
+
+		StringBuffer sb = new StringBuffer();
+		try {
+			InputStream regexStream = ResultsResource.class.getClassLoader().getResourceAsStream(profileFile);
+			Reader reader = new InputStreamReader(regexStream, StandardCharsets.UTF_8);
+			BufferedReader in = new BufferedReader(reader);
+			String line;
+
+			while ((line = in.readLine()) != null) {
+				// if (line.length() == 0) {
+				// continue;
+				// }
+				sb.append(line);
+
+			}
+			in.close();
+		} catch (IOException e) {
+			// LOG.error("There was an error reading the default-regex-filters file");
+			e.printStackTrace();
+		}
+
+		//System.out.println(sb.toString());
+		return sb.toString();
+	}
+		
 	Metadata compose_metadata(String url, String eid, String traceurl){
 		 Map<String, String[]> map = new HashMap();
 			map.put("url.path", new String[] { url });

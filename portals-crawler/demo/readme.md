@@ -1,5 +1,5 @@
-## User interface to submit urls and traces to crawler.
-# Installation steps
+# User interface to submit urls and traces to crawler.
+## Installation steps
 ## git clone trace-crawler repo
 ```
 cd </dirofproject/>
@@ -65,8 +65,10 @@ cd wabac
 ln -s  </dirofproject>/trace-crawler/warcs warcs
 
 ```
-## check service at http://<hostname>/results
+## check service at
+``` sh
+http://<hostname>/results
 
-
+```
 
  

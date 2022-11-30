@@ -57,10 +57,10 @@ change directories with your project directory: location /trace
 sudo chmod 751 -R  <dirofproject>
 sudo systemctl restart nginx
 ```
-## wabac
+## wabac https://github.com/webrecorder/wabac.js-1.0.
 at </dirofproject>/trace-crawler/ 
 ``` sh
-git  clone https://github.com/webrecorder/wabac.js-1.0.  wabac
+git  clone https://github.com/webrecorder/wabac.js  wabac
 cd wabac
 ln -s  </dirofproject>/trace-crawler/warcs warcs
 

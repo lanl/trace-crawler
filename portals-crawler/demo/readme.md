@@ -55,14 +55,17 @@ change directories with your project directory: location /trace
 ** Nginx needs to have read permission the files that should be served AND have execute permission in each of the parent directories along the path from the root to the served files.**
 ``` sh
 sudo chmod 751 -R  <dirofproject>
+sudo chmod 777 -R  <dirofproject>/warcs
+
 sudo systemctl restart nginx
+
 ```
-## wabac https://github.com/webrecorder/wabac.js-1.0.
+## wabac https://github.com/webrecorder/wabac.js-1.0
 at </dirofproject>/trace-crawler/ 
 ``` sh
 git  clone https://github.com/webrecorder/wabac.js  wabac
 cd wabac
-ln -s  </dirofproject>/trace-crawler/warcs warcs
+ln -s  </dirofproject>/trace-crawler/warcs/warcstore warcs
 
 ```
 ## check service at

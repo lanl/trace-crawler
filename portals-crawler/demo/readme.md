@@ -1,5 +1,5 @@
 # User interface to submit urls and traces to crawler.
-## Installation steps
+## Installation of crawler and configuration steps for interface
 ## git clone trace-crawler repo
 ```
 cd </dirofproject/>
@@ -32,12 +32,15 @@ tracer-crawler> storm jar tracer-crawler.jar  gov.lanl.crawler.CrawlTopology -co
 ```
 see also how to look up logs. 
 
-## change hostname in my.properties at ../portals-crawler/demo/
-## change project dir in start.sh at ../portals-crawler/demo/
-
-##start demo server
+## Configure
+``` sh
+change hostname, project dir in my.properties at ../portals-crawler/demo/
+change project dir in start.sh at ../portals-crawler/demo/
+```
+## start demo server
+``` sh
 ./start.sh 
-
+```
 ## Install nginx and copy ../portals-crawler/demo/config/tracershow.conf to /etc/nginx/conf.d
 ``` sh
 Adjust the config to your own hostname

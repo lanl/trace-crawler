@@ -65,6 +65,7 @@ sudo systemctl restart nginx
 ```
 ## wabac https://github.com/webrecorder/wabac.js-1.0
 at </dirofproject>/trace-crawler/ 
+the wabac needs https://, so configure ssl. for wabac urls.
 ``` sh
 git  clone https://github.com/webrecorder/wabac.js  wabac
 cd wabac

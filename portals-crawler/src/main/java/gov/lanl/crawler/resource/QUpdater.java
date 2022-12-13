@@ -281,6 +281,7 @@ public class QUpdater extends Thread {
 				st3.execute(sql3);
 				Metadata metadata = SubmitResource.compose_metadata( aurl,  ev, trace);
 				Timestamp nextFetch = new Timestamp(new Date().getTime());
+				sr.prepare(conf);
 				sr.update_table(aurl, Status.DISCOVERED,  metadata,  nextFetch,  ev);
 				}
 

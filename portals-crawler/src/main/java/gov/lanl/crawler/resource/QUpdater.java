@@ -9,11 +9,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.digitalpebble.stormcrawler.Metadata;
+import com.digitalpebble.stormcrawler.persistence.Status;
 import com.digitalpebble.stormcrawler.sql.Constants;
 
 import gov.lanl.crawler.input.InputServer;
@@ -256,8 +259,8 @@ public class QUpdater extends Thread {
 	
 	public void submitonhold(){
 		prepare(conf);
-	String sql = "Select url,event_id from input_jobs where status='HOLD'; ";
-	
+	String sql = "Select url,event_id,trace_url from input_jobs where status='HOLD'; ";
+	SubmitResource sr= new SubmitResource();
 	Statement st=null,st2=null,st3 = null;
 	ResultSet rs=null,rs2 = null;
 	try {
@@ -268,14 +271,17 @@ public class QUpdater extends Thread {
 		while (rs.next()) {
 			String aurl = rs.getString(1);
 			String ev=rs.getString(2);
-			
-			String sql2 = "Select count(*) from input_jobs where status='DISCOVERED' where url='"+aurl+"'";
+			String trace=rs.getString(3);
+			String sql2 = "Select count(*) from input_jobs where status='DISCOVERED' and url='"+aurl+"'";
 			rs2 = st2.executeQuery(sql2);
 			while (rs2.next()) {
 				int c = rs2.getInt(1);
 				if (c==0) {
 				String sql3 = "Update input_jobs set status='DISCOVERED'   where event_id='"+ev+"'";
 				st3.execute(sql3);
+				Metadata metadata = SubmitResource.compose_metadata( aurl,  ev, trace);
+				Timestamp nextFetch = new Timestamp(new Date().getTime());
+				sr.update_table(aurl, Status.DISCOVERED,  metadata,  nextFetch,  ev);
 				}
 
 			}

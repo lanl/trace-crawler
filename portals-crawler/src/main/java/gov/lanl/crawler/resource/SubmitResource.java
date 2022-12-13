@@ -98,7 +98,7 @@ public class SubmitResource {
 		return sb.toString();
 	}
 		
-	Metadata compose_metadata(String url, String eid, String traceurl){
+	static Metadata compose_metadata(String url, String eid, String traceurl){
 		 Map<String, String[]> map = new HashMap();
 			map.put("url.path", new String[] { url });
 			map.put("depth", new String[] { "0" });

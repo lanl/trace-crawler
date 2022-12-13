@@ -110,8 +110,11 @@ public class TraceTest {
 				t.driverdir = args[2];
 			}
 		}
-		
+		t.driverdir="/Users/ludab/Downloads/chromedriver";
 		 //t.urlp ="https://gitlab.com/occam-archive/occam/-/issues";
+		t.urlp ="https://sourceforge.net/p/pymca/";  
+		t.tracep="File:////Users/ludab/Downloads/vIEvAtVMPc.json";
+		
 		 //t.tracep="File:///Users/Lyudmila/project2022/trace-crawler/portals-crawler/src/main/resources/gitlab8.json";
 		 //t.driverdir="/Users/Lyudmila/Downloads/chromedriver_103";
 		TimeZone tz = TimeZone.getTimeZone("GMT");

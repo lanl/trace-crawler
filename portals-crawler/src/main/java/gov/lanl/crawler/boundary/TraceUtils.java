@@ -416,10 +416,18 @@ public class TraceUtils {
 			
 			// wait for Javascript to load
 			ExpectedCondition<Boolean> jsLoad = new ExpectedCondition<Boolean>() {
+						
 				@Override
 				public Boolean apply(WebDriver driver) {
-					return ((JavascriptExecutor) driver).executeScript("return document.readyState").toString()
-							.equals("complete");
+					try {
+					return (
+					
+							(JavascriptExecutor) driver).executeScript("return document.readyState").toString().equals("complete");
+					}
+					catch (Exception e) {
+						// no jQuery present
+						return true;
+					}
 				}
 			};
 

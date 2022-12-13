@@ -1214,6 +1214,7 @@ void do_screen(RemoteWebDriver driver) {
 			 _options.put("click", true);
 			int status = doClick(driver, getBy((String) sel.get("selectorType"), (String) sel.get("selector")),
 					urlValue, true, _options, urls);
+			System.out.println("status"+status);
 			if (status == 3) {
 				stop_traversing = true;
 			}

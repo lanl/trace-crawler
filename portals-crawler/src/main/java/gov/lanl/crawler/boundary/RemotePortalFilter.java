@@ -241,7 +241,7 @@ public class RemotePortalFilter extends NavigationFilter {
 
 			new FluentWait<RemoteWebDriver>(driver).until(webDriver -> ((JavascriptExecutor) webDriver)
 					.executeScript("return document.readyState =='complete'"));
-			driver.manage().window().fullscreen();
+			//driver.manage().window().fullscreen();
 			String _url = (String) entry.getKey();
 			String strace = (String) entry.getValue();
 			if (strace == null) {
@@ -259,7 +259,7 @@ public class RemotePortalFilter extends NavigationFilter {
 				System.out.println(_url);
 			} else {
 
-				System.out.println("adding to q:" + _url);
+				System.out.println("alert :adding to q:" + _url);
 				// InboxResource ibox = new InboxResource();
 				Map<String, String[]> map = new HashMap();
 				map.put("url.path", new String[] { _url });

@@ -384,6 +384,7 @@ public abstract class SeleniumProtocol extends AbstractHttpProtocol {
 			options.addArguments("--disable-infobars");
 			options.addArguments("--disable-notifications");
 			options.addArguments("--disable-extenstions");
+			options.addArguments("--disable-dev-shm-usage"); 
 			options.setExperimentalOption("useAutomationExtension", false);
 			//options.addArguments(Arrays.asList("--start-maximized"));
 			options.addArguments("--allow-running-insecure-content");

@@ -280,21 +280,21 @@ public class RemotePortalFilter extends NavigationFilter {
 				 */
 				// this is tested solution with flag
 
-				if (_url != null) {
+				/*if (_url != null) {
 					if (_url.length() != 0) {
 						if (!nosubtrace.equals("true")) {
 							su._store(_url, "SUBTRACE", metadata, nextFetch);
 						}
 
 					}
-				}
+				}*/
 				// this is new solution but not tested
 				// may be needed new driver object not mess with original state
 				// execute subtrace in same session
-				/*
-				 * if (_url != null) { if (_url.length() != 0) { driver.get(_url); filter(
-				 * driver, metadata); } }
-				 */
+				
+				  if (_url != null) { if (_url.length() != 0) { driver.get(_url); filter(
+				  driver, metadata); } }
+				 
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

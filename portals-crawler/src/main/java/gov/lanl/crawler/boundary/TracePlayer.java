@@ -384,6 +384,7 @@ void do_screen(RemoteWebDriver driver) {
 	public int doClick(RemoteWebDriver driver, By by, String url, Boolean goback, Map myoptions,
 			List<SimpleEntry> dummyContent) {
 			int status = 0; //  default error
+			System.out.println("status in doClick:"+status);
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
@@ -573,6 +574,7 @@ void do_screen(RemoteWebDriver driver) {
 			ObjectMapper mapperObj = new ObjectMapper();
 			try {
 				String subtrace = mapperObj.writeValueAsString(parentNode);
+				System.out.println("subtrace");
 				System.out.println(subtrace);
 				_options.put("subtrace", subtrace);
 			} catch (JsonProcessingException e) {
@@ -1206,10 +1208,13 @@ void do_screen(RemoteWebDriver driver) {
 			System.out.println("Simple click");
 			// simple click
 			Map sel = getPreferredSelector(parentNode, true);
+			System.out.println("sel pref"+sel.size());
 			// getBy((String) sel.get("selectorType"), (String) sel.get("selector"));
-			bu.waitForJSandJQueryToLoad(driver);
+			boolean a = bu.waitForJSandJQueryToLoad(driver);
 			// bu.presClick(driver,getBy((String) sel.get("selectorType"), (String)
 			// sel.get("selector")) );
+			
+			System.out.println(a);
 			Map _options = add_subtrace(parentNode);
 			 _options.put("click", true);
 			int status = doClick(driver, getBy((String) sel.get("selectorType"), (String) sel.get("selector")),

@@ -16,7 +16,7 @@ $ mvn clean package
 ## Run trace-crawler  on Docker
 A configuration to run crawler via docker-compose is provided (see readme at trace-crawler). 
 The file ./docker-compose.yaml puts every component (Mysql, Apache storm, Warcproxy, Chrome Selenium hub) into  containers.
-First we launch all components:
+First we  can lauch all components :
 
 ``` sh
 cd ./trace-crawler
@@ -39,8 +39,13 @@ change project dir in start.sh at ../portals-crawler/demo/
 ```
 ## start demo server
 ``` sh
-./start.sh 
+nohup ./start.sh > out.txt & 
 ```
+## stop demo server
+find java process and kill it
+ps aux|grep templates
+kill -9 <pid>
+
 ## Install nginx and copy ../portals-crawler/demo/config/tracershow.conf to /etc/nginx/conf.d
 ``` sh
 Adjust the config to your own hostname
@@ -53,7 +58,7 @@ change directories with your project directory: location /trace
 #start nginx
 ``` sh
  sudo service nginx start
-```
+```  
 ## Nginx: changing permissions of directories where static files will reside
 ** Nginx needs to have read permission the files that should be served AND have execute permission in each of the parent directories along the path from the root to the served files.**
 ``` sh
@@ -65,14 +70,14 @@ sudo systemctl restart nginx
 ```
 ## wabac https://github.com/webrecorder/wabac.js-1.0
 at </dirofproject>/trace-crawler/ 
-the wabac needs https://, so configure ssl. for wabac urls.
+
 ``` sh
 git  clone https://github.com/webrecorder/wabac.js  wabac
 cd wabac
 ln -s  </dirofproject>/trace-crawler/warcs/warcstore warcs
-
+the wabac app  needs https://, so configure ssl for wabac url .
 ```
-## check service at
+## check demo service at
 ``` sh
 http://<hostname>/results
 

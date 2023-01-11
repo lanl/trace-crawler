@@ -1,6 +1,7 @@
 package gov.lanl.crawler.boundary;
 
 import com.digitalpebble.stormcrawler.protocol.selenium.NavigationFilter;
+
 import com.digitalpebble.stormcrawler.sql.Constants;
 import com.digitalpebble.stormcrawler.util.ConfUtils;
 
@@ -22,7 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.SessionId;
@@ -38,13 +38,21 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 //import com.savoirtech.logging.slf4j.json.logger.JsonLogger;
 
 import gov.lanl.crawler.core.StatusUpdaterBolt;
+import gov.lanl.crawler.resource.DeleteResource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
-public class RemotePortalFilter extends NavigationFilter {
+interface Callback {
+    void callback(String ev,DeleteResource dr
+    		
+    		); 
+}
+public class RemotePortalFilter extends NavigationFilter implements Callback   {
 	// String portalname = "github.com";
 	List<HashMap> Elements = new ArrayList();
+	DeleteResource d =  new DeleteResource();
+	
 	private List<PortalRule> portalrules;
 	private JsonNode nodem;
 	String filter = "";
@@ -151,12 +159,12 @@ public class RemotePortalFilter extends NavigationFilter {
 		TracePlayer trplay = new TracePlayer(slowmode,driver);
 		EventFiringWebDriver efd = new EventFiringWebDriver(driver);
 		efd.register(trplay);
-		
+		//Callback c= null;
 		// driver.register(trplay);
 		if (current != null) {
 			try {
-				// 30 minute
-				TimeoutBlock timeoutBlock = new TimeoutBlock(30 * 60 * 1000*100);// set timeout in milliseconds
+				// 30 minute 30 * 60 * 1000
+				TimeoutBlock timeoutBlock = new TimeoutBlock(30 * 60 * 1000*3);// set timeout in milliseconds
 				// timeout for testing
 				// TimeoutBlock timeoutBlock = new TimeoutBlock(2000);//set timeout in
 				// milliseconds
@@ -165,6 +173,7 @@ public class RemotePortalFilter extends NavigationFilter {
 					String urlValue;
 					JsonNode root;
 					RemoteWebDriver driver;
+					//Callback c; 
 					//EventFiringWebDriver driver;
 					List<SimpleEntry> urls;
 					//int ccount;
@@ -182,7 +191,11 @@ public class RemotePortalFilter extends NavigationFilter {
 					@Override
 					public void run() {
 						trplay.traverseTrace(root, driver, urlValue, urls);
+						//this.c.callback();
 					}
+					
+
+					
 					
 				}.init(current, urlValue, driver, urls, trplay);
 
@@ -218,11 +231,18 @@ public class RemotePortalFilter extends NavigationFilter {
 			//.field("filter",filter)
 			//.field("linksfound",urls.size()).log();
 			
-			
+			try {
 		
 		if (tableName != null) {
-			urls.forEach(link -> processLinks((SimpleEntry) link, driver, event, su));
+			urls.forEach(link -> processLinks((SimpleEntry) link, driver, event, su,d));
 		}
+			}
+			 catch (Exception e) { // TODO Auto-generated catch
+				 e.printStackTrace();
+				 metadata.addValue("cancel", "true");
+				 d.update_table("CANCELED", event); 
+			 }
+				 
 		long end = System.currentTimeMillis();
 		long dur = (end - start);/// (1000L)) ;
 		metadata.addValue("traceDur", String.valueOf(dur));
@@ -236,12 +256,16 @@ public class RemotePortalFilter extends NavigationFilter {
 		return new ProtocolResponse(dummyContent.toString().getBytes(), 200, metadata);
 	}
 
-	public void processLinks(SimpleEntry entry, RemoteWebDriver driver, String event, StatusUpdaterBolt su) {
+	public void processLinks(SimpleEntry entry, RemoteWebDriver driver, String event, StatusUpdaterBolt su,DeleteResource d) {
 		try {
 
+			
+			callback(event, d);
+			
 			new FluentWait<RemoteWebDriver>(driver).until(webDriver -> ((JavascriptExecutor) webDriver)
 					.executeScript("return document.readyState =='complete'"));
 			//driver.manage().window().fullscreen();
+			
 			String _url = (String) entry.getKey();
 			String strace = (String) entry.getValue();
 			if (strace == null) {
@@ -679,6 +703,19 @@ public class RemotePortalFilter extends NavigationFilter {
 			Objects.requireNonNull(after);
 			return (S s, T t, U u) -> after.apply(apply(s, t, u));
 		}
+	}
+
+
+
+	@Override
+	public void callback(String ev,DeleteResource d) {
+		
+		String status= d.check_delete(ev);
+		if (status.equals("CANCEL")) {
+			throw new Error("execution canceled"); 
+		}
+		// TODO Auto-generated method stub
+		
 	}
 
 

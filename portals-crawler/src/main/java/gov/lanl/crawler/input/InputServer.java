@@ -31,6 +31,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 //import org.glassfish.jersey.servlet.ServletContainer;
 
+import gov.lanl.crawler.resource.DeleteResource;
 import gov.lanl.crawler.resource.InitMsgServlet;
 import gov.lanl.crawler.resource.ResultsResource;
 import gov.lanl.crawler.resource.SubmitResource;
@@ -107,7 +108,7 @@ public enum InputServer {
 			myset.add(MultiPartFeature.class);
 			
 		    myset.add(SubmitResource.class);
-		    
+		    myset.add(DeleteResource.class);
 			ResourceConfig rc = new ResourceConfig().registerClasses(myset);
 					//register(InboxResource.class).register(ESAPIResource.class);
 					//.register(AcceptMessageResource.class);

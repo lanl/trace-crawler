@@ -110,7 +110,8 @@ public class TraceTest {
 				t.driverdir = args[2];
 			}
 		}
-		t.driverdir="/Users/ludab/Downloads/chromedriver";
+		//t.driverdir="/Users/ludab/Downloads/chromedriver";
+		t.driverdir="/Users/ludab/Downloads/chromedriver_mac64_109/chromedriver";
 		 //t.urlp ="https://gitlab.com/occam-archive/occam/-/issues";
 		t.urlp ="https://sourceforge.net/p/pymca/";  
 		t.tracep="File:////Users/ludab/Downloads/vIEvAtVMPc.json";

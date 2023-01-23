@@ -10,11 +10,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,11 +51,11 @@ interface Callback {
     		
     		); 
 }
-public class RemotePortalFilter extends NavigationFilter implements Callback   {
+public class RemotePortalFilter extends NavigationFilter implements Callback  {
 	// String portalname = "github.com";
 	List<HashMap> Elements = new ArrayList();
 	DeleteResource d =  new DeleteResource();
-	
+	//System.out.println(Thread.currentThread().getName()); 
 	private List<PortalRule> portalrules;
 	private JsonNode nodem;
 	String filter = "";
@@ -72,6 +75,10 @@ public class RemotePortalFilter extends NavigationFilter implements Callback   {
 	@Override
 	public ProtocolResponse filter(RemoteWebDriver driver, Metadata metadata) {
 		// ATUTestRecorder recorder = createvideorecorder();
+		String a = Thread.currentThread().getName();
+		System.out.println(Thread.currentThread().getName()); 
+		getThreadByName(a);
+		
 		StringBuilder dummyContent = new StringBuilder("<html>");
 		bu = new TraceUtils();
 		Map cap = driver.getCapabilities().asMap();
@@ -155,7 +162,9 @@ public class RemotePortalFilter extends NavigationFilter implements Callback   {
 		}
 		
 		//JsonLogger a = statsloger.info().field("url",urlValue);
-	
+		String event = metadata.getFirstValue("event");
+		//initializing  checking  thread
+		bar(event,d,a);
 		TracePlayer trplay = new TracePlayer(slowmode,driver);
 		EventFiringWebDriver efd = new EventFiringWebDriver(driver);
 		efd.register(trplay);
@@ -214,7 +223,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback   {
 		trplay.finish();
 		dummyContent.append("</html>");
 		metadata.addValue("filter", filter);
-		String event = metadata.getFirstValue("event");
+		//String event = metadata.getFirstValue("event");
 		int clickcount=trplay.getTotalClickcount();
 		String partialexit=trplay.getPartialexit();
 		metadata.addValue("clickCount", String.valueOf(clickcount));
@@ -718,5 +727,62 @@ public class RemotePortalFilter extends NavigationFilter implements Callback   {
 		
 	}
 
+	Thread getThreadByName(String name) {
+	    // Get current Thread Group
+	    ThreadGroup threadGroup = Thread.currentThread().getThreadGroup();
+	    ThreadGroup parentThreadGroup;
+	    while ((parentThreadGroup = threadGroup.getParent()) != null) {
+	        threadGroup = parentThreadGroup;
+	    }
+	    // List all active Threads
+	    final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+	    int nAllocated = threadMXBean.getThreadCount();
+	    int n = 0;
+	    Thread[] threads;
+	    do {
+	        nAllocated *= 2;
+	        threads = new Thread[nAllocated];
+	        n = threadGroup.enumerate(threads, true);
+	    } while (n == nAllocated);
+	    threads = Arrays.copyOf(threads, n);
+	    // Get Thread by name
+	    for (Thread thread : threads) {
+	        System.out.println(thread.getName());
+	        if (thread.getName().equals(name)) {
+	            return thread;
+	        }
+	    }
+	    return null;
+	}
+
+	//@Override
+	//public void run() {
+		//System.out.println(Thread.currentThread().getName());  
+		// TODO Auto-generated method stub
+		
+	//}
+	void bar(String ev,DeleteResource d,String name) {
+		
+	    Thread barThread = new Thread(new Runnable() {
+	        @Override
+	        public void run() {
+	        	String status= d.check_delete(ev);
+	        	System.out.println("foo" + status);
+	    		if (status.equals("CANCEL")) {
+	    			getThreadByName(name).interrupt();
+	    			 
+	    		}
+	    		 try {
+	    			 //3 minuts
+					Thread.sleep(3 * 60 * 1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	        }
+	    });
+
+	    barThread.start();
+	}
 
 }

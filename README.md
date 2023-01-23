@@ -4,8 +4,11 @@ The plugin to execute the trace  is done thru navigation filter of StormCrawler.
 The trace is a json file where web page navigation steps are recorded in tree-like data structure.
 The navigation filter interprets the json data structure and issues selenium api calls to the selenium hub. Hub is the central point in the Selenium Grid that routes the JSON  commands to the individual browsers-nodes. The Remote Web Driver is configured with proxy, so the http api calls are done with  proxy service, warcprox, to record all traffic to warc files. 
 For each url seed the crawler starts and stops personal proxy when it finishes to make sure that all navigation steps of particular trace and corresponding embedded resources are well separated into a single warc file. Thus this is selective crawling where we want to archive web resource with well defined boundaries.
-The software to create the trace  can be found at https://github.com/mementoweb/tracer-extension
-
+``` sh
+The google browser extension to create the trace  can be found at https://github.com/mementoweb/tracer-extension
+To install demo web interface to submit the crawling jobs see https://github.com/lanl/trace-crawler/tree/master/portals-crawler/demo
+Example of tracerdemo installation: http://tracerdemo.mementoweb.org/
+``` 
 ## Build the Project:
 * if you do not want to use docker go to the portals-crawler directory and follow instructions 
 * or see docker instructions below

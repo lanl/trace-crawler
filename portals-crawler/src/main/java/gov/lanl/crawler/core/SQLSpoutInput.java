@@ -43,6 +43,8 @@ import com.digitalpebble.stormcrawler.util.CollectionMetric;
 import com.digitalpebble.stormcrawler.util.ConfUtils;
 import com.digitalpebble.stormcrawler.util.StringTabScheme;
 
+import gov.lanl.crawler.resource.SubmitResource;
+
 import org.apache.storm.metric.api.MultiCountMetric;
 import org.apache.storm.spout.Scheme;
 import org.apache.storm.spout.SpoutOutputCollector;
@@ -203,7 +205,57 @@ public class SQLSpoutInput extends BaseRichSpout {
 	}
    }
 
-    
+    public String check_delete(String ev) {
+		//prepare(conf);
+		refreshConnection();
+		String sql = "Select status from input_jobs where event_id='" + ev + "'";
+		SubmitResource sr = new SubmitResource();
+		Statement st = null, st3 = null;
+		ResultSet rs = null;
+		String status = "D";
+		try {
+			st = this.connection.createStatement();
+			rs = st.executeQuery(sql);
+
+			// st3 = this.connection.createStatement();
+			while (rs.next()) {
+
+				status = rs.getString(1);
+
+			}
+
+		} catch (SQLException e) {
+			System.out.println(e);
+			// LOG.error("Exception while querying table", e);
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+			} catch (SQLException e) {
+				// LOG.error("Exception closing resultset", e);
+			}
+			try {
+				if (st != null)
+					st.close();
+			} catch (SQLException e) {
+				// LOG.error("Exception closing statement", e);
+			}
+
+			try {
+				if (st3 != null)
+					st3.close();
+			} catch (SQLException e) {
+				// LOG.error("Exception closing statement", e);
+			}
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return status;
+	}
     private void populateBuffer() {
 
         lastQueryTime = Instant.now().toEpochMilli();

@@ -47,7 +47,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 interface Callback {
-    void callback(String ev,DeleteResource dr
+    void callback(String ev, StatusUpdaterBolt  dr
     		
     		); 
 }
@@ -165,7 +165,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		//JsonLogger a = statsloger.info().field("url",urlValue);
 		String event = metadata.getFirstValue("event");
 		//initializing  checking  thread
-		bar(event,d,a);
+		bar(event,su,a);
 		System.out.println("bar");
 		TracePlayer trplay = new TracePlayer(slowmode,driver);
 		EventFiringWebDriver efd = new EventFiringWebDriver(driver);
@@ -203,7 +203,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 			try {
 		
 		if (tableName != null) {
-			urls.forEach(link -> processLinks((SimpleEntry) link, driver, event, su,d));
+			urls.forEach(link -> processLinks((SimpleEntry) link, driver, event, su));
 		}
 			}
 			 catch (Exception e) { // TODO Auto-generated catch
@@ -225,11 +225,11 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		return new ProtocolResponse(dummyContent.toString().getBytes(), 200, metadata);
 	}
 
-	public void processLinks(SimpleEntry entry, RemoteWebDriver driver, String event, StatusUpdaterBolt su,DeleteResource d) {
+	public void processLinks(SimpleEntry entry, RemoteWebDriver driver, String event, StatusUpdaterBolt su) {
 		try {
 
 			
-			callback(event, d);
+			callback(event, su);
 			
 			new FluentWait<RemoteWebDriver>(driver).until(webDriver -> ((JavascriptExecutor) webDriver)
 					.executeScript("return document.readyState =='complete'"));
@@ -677,7 +677,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 
 
 	@Override
-	public void callback(String ev,DeleteResource d) {
+	public void callback(String ev,StatusUpdaterBolt d) {
 		
 		String status= d.check_delete(ev);
 		if (status.equals("CANCEL")) {
@@ -721,7 +721,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		// TODO Auto-generated method stub
 		
 	//}
-	void bar(String ev,DeleteResource d,String name) {
+	void bar(String ev,StatusUpdaterBolt d,String name) {
 		
 	    Thread barThread = new Thread(new Runnable() {
 	        @Override

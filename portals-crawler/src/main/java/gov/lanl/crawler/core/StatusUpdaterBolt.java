@@ -41,6 +41,8 @@ import com.digitalpebble.stormcrawler.sql.Constants;
 import com.digitalpebble.stormcrawler.util.ConfUtils;
 import com.digitalpebble.stormcrawler.util.URLPartitioner;
 
+import gov.lanl.crawler.resource.SubmitResource;
+
 @SuppressWarnings("serial")
 public class StatusUpdaterBolt extends AbstractStatusUpdaterBolt {
 
@@ -162,6 +164,58 @@ public class StatusUpdaterBolt extends AbstractStatusUpdaterBolt {
 		}
 	}
 
+	public String check_delete(String ev) {
+		//prepare(conf);
+		refreshConnection();
+		String sql = "Select status from input_jobs where event_id='" + ev + "'";
+		SubmitResource sr = new SubmitResource();
+		Statement st = null, st3 = null;
+		ResultSet rs = null;
+		String status = "D";
+		try {
+			st = this.connection.createStatement();
+			rs = st.executeQuery(sql);
+
+			// st3 = this.connection.createStatement();
+			while (rs.next()) {
+
+				status = rs.getString(1);
+
+			}
+
+		} catch (SQLException e) {
+			System.out.println(e);
+			// LOG.error("Exception while querying table", e);
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+			} catch (SQLException e) {
+				// LOG.error("Exception closing resultset", e);
+			}
+			try {
+				if (st != null)
+					st.close();
+			} catch (SQLException e) {
+				// LOG.error("Exception closing statement", e);
+			}
+
+			try {
+				if (st3 != null)
+					st3.close();
+			} catch (SQLException e) {
+				// LOG.error("Exception closing statement", e);
+			}
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return status;
+	}
+	
 	private String selectMessage(String url) {
 
 		// lastQueryTime = Instant.now().toEpochMilli();

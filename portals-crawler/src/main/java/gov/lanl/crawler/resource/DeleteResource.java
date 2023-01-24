@@ -1,5 +1,6 @@
 package gov.lanl.crawler.resource;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,6 +13,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,17 +30,39 @@ public class DeleteResource {
 	private static Map<String, String> conf = InputServer.INSTANCE.prop;
 
 	@GET
+	@Path("/hard/{id:.*}")
+	// @Produces("application/json")
+	public Response getNEvent(@javax.ws.rs.PathParam("id") String _id) {
+		req_delete(_id) ;
+		ProcessBuilder probuilder = new ProcessBuilder("/data/web/tracer_demo/trace-crawler/reloadcrawler.sh");
+		Process p;
+		try {
+			p = probuilder.start();
+			p.waitFor(5, TimeUnit.SECONDS);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+        ResponseBuilder r = Response.ok("request submitted for "+ _id);		
+		r.header("Content-Type", "text/html");
+		return r.build();
+	}
+	
+	@GET
 	@Path("/{id:.*}")
 	// @Produces("application/json")
 	public Response getEvent(@javax.ws.rs.PathParam("id") String _id) {
 		req_delete(_id) ;
+		
+		
         ResponseBuilder r = Response.ok("request submitted for "+ _id);		
 		r.header("Content-Type", "text/html");
 		return r.build();
 		
 
 	}
-
+	
 	public void prepare(Map stormConf) {// TopologyContext context,
 		// tableName = (String) stormConf.get(Constants.MYSQL_TABLE_PARAM_NAME);
 		// System.out.println("table:" + tableName);

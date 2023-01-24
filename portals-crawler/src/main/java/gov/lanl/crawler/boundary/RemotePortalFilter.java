@@ -66,6 +66,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 	//String partialexit = null;
 	StatusUpdaterBolt su = null;
 	String nosubtrace = "false";
+	volatile boolean shutdown=false;
 	//static Logger statsloger = Logger.getLogger("stats");
 	// com.savoirtech.logging.slf4j.json.logger.Logger statsloger =  LoggerFactory.getLogger("JSONLogger");
 	    
@@ -165,57 +166,16 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		String event = metadata.getFirstValue("event");
 		//initializing  checking  thread
 		bar(event,d,a);
+		System.out.println("bar");
 		TracePlayer trplay = new TracePlayer(slowmode,driver);
 		EventFiringWebDriver efd = new EventFiringWebDriver(driver);
 		efd.register(trplay);
 		//Callback c= null;
 		// driver.register(trplay);
 		if (current != null) {
-			try {
-				// 30 minute 30 * 60 * 1000
-				TimeoutBlock timeoutBlock = new TimeoutBlock(30 * 60 * 1000*3);// set timeout in milliseconds
-				// timeout for testing
-				// TimeoutBlock timeoutBlock = new TimeoutBlock(2000);//set timeout in
-				// milliseconds
-
-				Runnable block = new Runnable() {
-					String urlValue;
-					JsonNode root;
-					RemoteWebDriver driver;
-					//Callback c; 
-					//EventFiringWebDriver driver;
-					List<SimpleEntry> urls;
-					//int ccount;
-					TracePlayer trplay;
-					public Runnable init(JsonNode root, String urlValue, RemoteWebDriver driver, List<SimpleEntry> urls,TracePlayer trplay) {
-						this.root = root;
-						this.urlValue = urlValue;
-						this.driver =  driver;
-						this.urls = urls;
-						this.trplay=trplay;
-						//this.ccount = ccount;
-						return (this);
-					}
-
-					@Override
-					public void run() {
-						trplay.traverseTrace(root, driver, urlValue, urls);
-						//this.c.callback();
-					}
-					
-
-					
-					
-				}.init(current, urlValue, driver, urls, trplay);
-
-				timeoutBlock.addBlock(block);// execute the runnable block
-
-			} catch (Throwable ee) {
-				System.out.println("timeout");
-				metadata.addValue("timeout", "90min");
-				// catch the exception here . Which is block didn't execute within the time
-				// limit
-			}
+			//trace_with_timeout ( current,  urlValue,  driver,  urls, trplay, metadata) ;
+			
+		trplay.traverseTrace(current, driver, urlValue, urls);
 
 			// traverseTrace(root, driver, urlValue, urls, ccount);
 		} // root
@@ -781,8 +741,66 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 				}
 	        }
 	    });
-
+        System.out.println("foo started");
 	    barThread.start();
+	}
+	
+	void trace_with_timeout (JsonNode current, String urlValue, RemoteWebDriver driver, List<SimpleEntry> urls,TracePlayer trplay, Metadata metadata) {
+		//if (current != null) {
+			try {
+				// 30 minute 30 * 60 * 1000
+				TimeoutBlock timeoutBlock = new TimeoutBlock(30 * 60 * 1000*3);// set timeout in milliseconds
+			
+				// timeout for testing
+				// TimeoutBlock timeoutBlock = new TimeoutBlock(2000);//set timeout in
+				// milliseconds
+
+				Runnable block = new Runnable() {
+					String urlValue;
+					JsonNode root;
+					RemoteWebDriver driver;
+					//volatile boolean shutdown=false;
+					//Callback c; 
+					//EventFiringWebDriver driver;
+					List<SimpleEntry> urls;
+					//int ccount;
+					TracePlayer trplay;
+					public Runnable init(JsonNode root, String urlValue, RemoteWebDriver driver, List<SimpleEntry> urls,TracePlayer trplay) {
+						this.root = root;
+						this.urlValue = urlValue;
+						this.driver =  driver;
+						this.urls = urls;
+						this.trplay=trplay;
+						//this.ccount = ccount;
+						return (this);
+					}
+					
+					 public void shutdown() {
+					        shutdown = true;
+					    }
+					@Override
+					public void run() {
+						while (!shutdown) {
+						trplay.traverseTrace(root, driver, urlValue, urls);
+						//this.c.callback();
+					}
+					}
+
+					
+					
+				}.init(current, urlValue, driver, urls, trplay);
+
+				timeoutBlock.addBlock(block);// execute the runnable block
+
+			} catch (Throwable ee) {
+				System.out.println("timeout");
+				metadata.addValue("timeout", "90min");
+				// catch the exception here . Which is block didn't execute within the time
+				// limit
+			}
+
+			// traverseTrace(root, driver, urlValue, urls, ccount);
+		//} // root
 	}
 
 }

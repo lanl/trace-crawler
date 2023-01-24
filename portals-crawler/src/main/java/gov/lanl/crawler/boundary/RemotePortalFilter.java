@@ -76,7 +76,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 	public ProtocolResponse filter(RemoteWebDriver driver, Metadata metadata) {
 		// ATUTestRecorder recorder = createvideorecorder();
 		String a = Thread.currentThread().getName();
-		System.out.println(Thread.currentThread().getName()); 
+		System.out.println("Thread name" +Thread.currentThread().getName()); 
 		getThreadByName(a);
 		
 		StringBuilder dummyContent = new StringBuilder("<html>");

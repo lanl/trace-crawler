@@ -163,6 +163,46 @@ public class StatusUpdaterBolt extends AbstractStatusUpdaterBolt {
 
 		}
 	}
+	public void update_table(String status, String ev) {
+		// the mysql insert statement
+		refreshConnection();
+		System.out.println("update table");
+		// String tableName="urls";
+		// String query = tableName + " ( status)"
+		// + " values (?, ?, ?, ?, ?, ?, md5(?), ?)";
+		String sql = "Update urls set status='?'   where event_id='?'";
+		// System.out.println(query);
+
+		PreparedStatement preparedStmt;
+		try {
+			preparedStmt = connection.prepareStatement(sql);
+			preparedStmt.setString(1, status);
+
+			preparedStmt.setString(2, ev);
+
+			// long start = System.currentTimeMillis();
+			System.out.println(preparedStmt);
+			// execute the preparedstatement
+
+			preparedStmt.execute();
+			preparedStmt.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		finally {
+
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
 
 	public String check_delete(String ev) {
 		//prepare(conf);

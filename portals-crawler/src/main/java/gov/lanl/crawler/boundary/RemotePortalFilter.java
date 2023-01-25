@@ -46,11 +46,15 @@ import gov.lanl.crawler.resource.DeleteResource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
+
+
 interface Callback {
     void callback(String ev, StatusUpdaterBolt  dr
     		
     		); 
 }
+
+
 public class RemotePortalFilter extends NavigationFilter implements Callback  {
 	// String portalname = "github.com";
 	List<HashMap> Elements = new ArrayList();
@@ -175,9 +179,16 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		if (current != null) {
 			//trace_with_timeout ( current,  urlValue,  driver,  urls, trplay, metadata) ;
 			
-		trplay.traverseTrace(current, driver, urlValue, urls);
-
+		//trplay.traverseTrace(current, driver, urlValue, urls);
+			
+			
+			InteraptedBlock cu = new InteraptedBlock();
+					cu.init(current,  urlValue,  driver,  urls, trplay,event);
+					Thread th = new Thread(cu);
+			        th.start();
+					bar(event, su, a,th);
 			// traverseTrace(root, driver, urlValue, urls, ccount);
+			
 		} // root
 		// }
 		trplay.finish();
@@ -200,7 +211,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 			//.field("filter",filter)
 			//.field("linksfound",urls.size()).log();
 			
-			try {
+		try {
 		
 		if (tableName != null) {
 			urls.forEach(link -> processLinks((SimpleEntry) link, driver, event, su));
@@ -209,9 +220,9 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 			 catch (Exception e) { // TODO Auto-generated catch
 				 e.printStackTrace();
 				 metadata.addValue("cancel", "true");
-				// d.update_table("CANCELED", event); 
+				su.update_table("CANCELED", event); 
 			 }
-				 
+			 
 		long end = System.currentTimeMillis();
 		long dur = (end - start);/// (1000L)) ;
 		metadata.addValue("traceDur", String.valueOf(dur));
@@ -229,7 +240,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		try {
 
 			
-			//callback(event, su);
+			callback(event, su);
 			
 			new FluentWait<RemoteWebDriver>(driver).until(webDriver -> ((JavascriptExecutor) webDriver)
 					.executeScript("return document.readyState =='complete'"));
@@ -721,7 +732,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		// TODO Auto-generated method stub
 		
 	//}
-	void bar(String ev,StatusUpdaterBolt d,String name) {
+	void bar(String ev,StatusUpdaterBolt d,String name,Thread t) {
 		
 	    Thread barThread = new Thread(new Runnable() {
 	        @Override
@@ -729,7 +740,9 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 	        	String status= d.check_delete(ev);
 	        	System.out.println("foo" + status);
 	    		if (status.equals("CANCEL")) {
-	    			getThreadByName(name).interrupt();
+	    			//getThreadByName(name).interrupt();
+	    			t.interrupt();
+	    			
 	    			 
 	    		}
 	    		 try {
@@ -744,6 +757,9 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
         System.out.println("foo started");
 	    barThread.start();
 	}
+	
+	
+	/*
 	
 	void trace_with_timeout (JsonNode current, String urlValue, RemoteWebDriver driver, List<SimpleEntry> urls,TracePlayer trplay, Metadata metadata) {
 		//if (current != null) {
@@ -802,5 +818,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 			// traverseTrace(root, driver, urlValue, urls, ccount);
 		//} // root
 	}
-
+	*/
+	
+	
 }

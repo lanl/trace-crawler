@@ -1,5 +1,6 @@
 package gov.lanl.crawler.resource;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -39,6 +40,11 @@ public class DeleteResource {
 		try {
 			p = probuilder.start();
 			p.waitFor(5, TimeUnit.SECONDS);
+			File OutputFile = new File("delete_log.txt");
+			probuilder.redirectErrorStream(true);
+			// probuilder.directory(new File(warcdir));
+			probuilder.redirectOutput(OutputFile);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

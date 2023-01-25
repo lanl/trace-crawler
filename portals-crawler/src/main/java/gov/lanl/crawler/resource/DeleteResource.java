@@ -1,8 +1,10 @@
 package gov.lanl.crawler.resource;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
@@ -36,21 +38,32 @@ public class DeleteResource {
 	public Response getNEvent(@javax.ws.rs.PathParam("id") String _id) {
 		req_delete(_id) ;
 		update_table("CANCEL",  _id); 
-		ProcessBuilder probuilder = new ProcessBuilder("/data/web/tracer_demo/trace-crawler/reloadcrawler.sh");
+		String filePath = "/data/web/tracer_demo/trace-crawler/reloadcrawler.sh";
+		String[] cmd = {"sh", filePath};
+		//ProcessBuilder probuilder = new ProcessBuilder("/data/web/tracer_demo/trace-crawler/reloadcrawler.sh");
+		ProcessBuilder probuilder = new ProcessBuilder(cmd);
 		Process p;
+		StringBuilder builder = new StringBuilder();
 		try {
 			
-			File OutputFile = new File("delete_log.txt");
-			probuilder.redirectErrorStream(true);
+			//File OutputFile = new File("/data/web/tracer_demo/trace-crawler/delete_log.txt");
+			//probuilder.redirectErrorStream(true);
 			// probuilder.directory(new File(warcdir));
-			probuilder.redirectOutput(OutputFile);
+			//probuilder.redirectOutput(OutputFile);
 			p = probuilder.start();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			 String line = null;
+			 while ( (line = reader.readLine()) != null) {
+			 builder.append(line);}
 			p.waitFor(5, TimeUnit.SECONDS);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		 String result = builder.toString();
+		 System.out.print(result);
+		 System.out.println("end of script execution");
         ResponseBuilder r = Response.ok("restart request submitted for "+ _id);		
 		r.header("Content-Type", "text/html");
 		return r.build();

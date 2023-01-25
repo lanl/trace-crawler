@@ -41,7 +41,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 //import com.savoirtech.logging.slf4j.json.logger.JsonLogger;
 
 import gov.lanl.crawler.core.StatusUpdaterBolt;
-import gov.lanl.crawler.resource.DeleteResource;
+//import gov.lanl.crawler.resource.DeleteResource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -58,7 +58,7 @@ interface Callback {
 public class RemotePortalFilter extends NavigationFilter implements Callback  {
 	// String portalname = "github.com";
 	List<HashMap> Elements = new ArrayList();
-	DeleteResource d =  new DeleteResource();
+	//DeleteResource d =  new DeleteResource();
 	//System.out.println(Thread.currentThread().getName()); 
 	private List<PortalRule> portalrules;
 	private JsonNode nodem;
@@ -70,7 +70,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 	//String partialexit = null;
 	StatusUpdaterBolt su = null;
 	String nosubtrace = "false";
-	volatile boolean shutdown=false;
+	//volatile boolean shutdown=false;
 	//static Logger statsloger = Logger.getLogger("stats");
 	// com.savoirtech.logging.slf4j.json.logger.Logger statsloger =  LoggerFactory.getLogger("JSONLogger");
 	    
@@ -796,15 +796,15 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 						return (this);
 					}
 					
-					 public void shutdown() {
-					        shutdown = true;
-					    }
+					 //public void shutdown() {
+					   //     shutdown = true;
+					    //}
 					@Override
 					public void run() {
-						while (!shutdown) {
+						//while (!shutdown) {
 						trplay.traverseTrace(root, driver, urlValue, urls);
 						//this.c.callback();
-					}
+					//}
 					}
 
 					

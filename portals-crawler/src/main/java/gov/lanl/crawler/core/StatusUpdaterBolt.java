@@ -208,7 +208,7 @@ public class StatusUpdaterBolt extends AbstractStatusUpdaterBolt {
 		//prepare(conf);
 		refreshConnection();
 		String sql = "Select status from input_jobs where event_id='" + ev + "'";
-		SubmitResource sr = new SubmitResource();
+		//SubmitResource sr = new SubmitResource();
 		Statement st = null, st3 = null;
 		ResultSet rs = null;
 		String status = "D";

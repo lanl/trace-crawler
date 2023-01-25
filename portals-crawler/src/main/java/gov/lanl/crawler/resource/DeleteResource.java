@@ -31,58 +31,68 @@ import gov.lanl.crawler.input.InputServer;
 public class DeleteResource {
 	private Connection connection;
 	private static Map<String, String> conf = InputServer.INSTANCE.prop;
+	String reloaddir = (String) conf.get("reloaddir");
 
 	@GET
 	@Path("/hard/{id:.*}")
 	// @Produces("application/json")
 	public Response getNEvent(@javax.ws.rs.PathParam("id") String _id) {
-		req_delete(_id) ;
-		update_table("CANCEL",  _id); 
-		String filePath = "/data/web/tracer_demo/trace-crawler/reloadcrawler.sh";
-		String[] cmd = {"sh", filePath};
-		//ProcessBuilder probuilder = new ProcessBuilder("/data/web/tracer_demo/trace-crawler/reloadcrawler.sh");
+		req_delete(_id);
+		update_table("CANCEL", _id);
+		try {
+			// 5 sec to finish mysql transaction
+			Thread.sleep(5 * 1000);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		// String filePath = "/data/web/tracer_demo/trace-crawler/"+"reloadcrawler.sh";
+		String filePath = reloaddir + "reloadcrawler.sh";
+		String[] cmd = { "sh", filePath };
+		// ProcessBuilder probuilder = new
+		// ProcessBuilder("/data/web/tracer_demo/trace-crawler/reloadcrawler.sh");
 		ProcessBuilder probuilder = new ProcessBuilder(cmd);
 		Process p;
 		StringBuilder builder = new StringBuilder();
 		try {
-			
-			//File OutputFile = new File("/data/web/tracer_demo/trace-crawler/delete_log.txt");
-			//probuilder.redirectErrorStream(true);
+
+			// File OutputFile = new
+			// File("/data/web/tracer_demo/trace-crawler/delete_log.txt");
+			// probuilder.redirectErrorStream(true);
 			// probuilder.directory(new File(warcdir));
-			//probuilder.redirectOutput(OutputFile);
+			// probuilder.redirectOutput(OutputFile);
 			p = probuilder.start();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			 String line = null;
-			 while ( (line = reader.readLine()) != null) {
-			 builder.append(line);}
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				builder.append(line);
+			}
 			p.waitFor(5, TimeUnit.SECONDS);
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		 String result = builder.toString();
-		 System.out.print(result);
-		 System.out.println("end of script execution");
-        ResponseBuilder r = Response.ok("restart request submitted for "+ _id);		
+		String result = builder.toString();
+		System.out.print(result);
+		System.out.println("end of script execution");
+		ResponseBuilder r = Response.ok("restart request submitted for " + _id);
 		r.header("Content-Type", "text/html");
 		return r.build();
 	}
-	
+
 	@GET
 	@Path("/{id:.*}")
 	// @Produces("application/json")
 	public Response getEvent(@javax.ws.rs.PathParam("id") String _id) {
-		req_delete(_id) ;
+		req_delete(_id);
 		
-		
-        ResponseBuilder r = Response.ok("request submitted for "+ _id);		
+		ResponseBuilder r = Response.ok("request submitted for " + _id);
 		r.header("Content-Type", "text/html");
 		return r.build();
-		
 
 	}
-	
+
 	public void prepare(Map stormConf) {// TopologyContext context,
 		// tableName = (String) stormConf.get(Constants.MYSQL_TABLE_PARAM_NAME);
 		// System.out.println("table:" + tableName);

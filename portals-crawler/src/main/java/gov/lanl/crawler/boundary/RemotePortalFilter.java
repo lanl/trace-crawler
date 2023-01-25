@@ -169,7 +169,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		//JsonLogger a = statsloger.info().field("url",urlValue);
 		String event = metadata.getFirstValue("event");
 		//initializing  checking  thread
-		bar(event,su,a);
+		////bar(event,su,a);
 		//System.out.println("bar");
 		TracePlayer trplay = new TracePlayer(slowmode,driver);
 		EventFiringWebDriver efd = new EventFiringWebDriver(driver);
@@ -221,7 +221,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 			}
 			 catch (Exception e) { // TODO Auto-generated catch
 				 e.printStackTrace();
-				 metadata.addValue("cancel", "true");
+				//// metadata.addValue("cancel", "true");
 				 //su.update_table("CANCELED", event); 
 			 }
 			 

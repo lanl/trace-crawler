@@ -35,22 +35,23 @@ public class DeleteResource {
 	// @Produces("application/json")
 	public Response getNEvent(@javax.ws.rs.PathParam("id") String _id) {
 		req_delete(_id) ;
+		update_table("CANCEL",  _id); 
 		ProcessBuilder probuilder = new ProcessBuilder("/data/web/tracer_demo/trace-crawler/reloadcrawler.sh");
 		Process p;
 		try {
-			p = probuilder.start();
-			p.waitFor(5, TimeUnit.SECONDS);
+			
 			File OutputFile = new File("delete_log.txt");
 			probuilder.redirectErrorStream(true);
 			// probuilder.directory(new File(warcdir));
 			probuilder.redirectOutput(OutputFile);
-			
+			p = probuilder.start();
+			p.waitFor(5, TimeUnit.SECONDS);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-        ResponseBuilder r = Response.ok("request submitted for "+ _id);		
+        ResponseBuilder r = Response.ok("restart request submitted for "+ _id);		
 		r.header("Content-Type", "text/html");
 		return r.build();
 	}
@@ -97,7 +98,7 @@ public class DeleteResource {
 		// String tableName="urls";
 		// String query = tableName + " ( status)"
 		// + " values (?, ?, ?, ?, ?, ?, md5(?), ?)";
-		String sql = "Update urls set status='?'   where event_id='?'";
+		String sql = "Update urls set status=?   where event_id=?;";
 		// System.out.println(query);
 
 		PreparedStatement preparedStmt;

@@ -169,24 +169,26 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		//JsonLogger a = statsloger.info().field("url",urlValue);
 		String event = metadata.getFirstValue("event");
 		//initializing  checking  thread
-		//bar(event,su,a);
+		bar(event,su,a);
 		//System.out.println("bar");
 		TracePlayer trplay = new TracePlayer(slowmode,driver);
 		EventFiringWebDriver efd = new EventFiringWebDriver(driver);
 		efd.register(trplay);
 		//Callback c= null;
 		// driver.register(trplay);
+		
+		
 		if (current != null) {
 			//trace_with_timeout ( current,  urlValue,  driver,  urls, trplay, metadata) ;
 			
-		//trplay.traverseTrace(current, driver, urlValue, urls);
+		trplay.traverseTrace(current, driver, urlValue, urls);
 			
 			
-			InteraptedBlock cu = new InteraptedBlock();
-					cu.init(current,  urlValue,  driver,  urls, trplay,event);
-					Thread th = new Thread(cu);
-			        th.start();
-					bar(event, su, a,th);
+			//InteraptedBlock cu = new InteraptedBlock();
+			//		cu.init(current,  urlValue,  driver,  urls, trplay,event);
+			//		Thread th = new Thread(cu);
+			  //      th.start();
+		//bar(event, su, a);
 			// traverseTrace(root, driver, urlValue, urls, ccount);
 			
 		} // root
@@ -220,7 +222,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 			 catch (Exception e) { // TODO Auto-generated catch
 				 e.printStackTrace();
 				 metadata.addValue("cancel", "true");
-				su.update_table("CANCELED", event); 
+				 //su.update_table("CANCELED", event); 
 			 }
 			 
 		long end = System.currentTimeMillis();
@@ -240,7 +242,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		try {
 
 			
-			callback(event, su);
+			//callback(event, su);
 			
 			new FluentWait<RemoteWebDriver>(driver).until(webDriver -> ((JavascriptExecutor) webDriver)
 					.executeScript("return document.readyState =='complete'"));
@@ -732,26 +734,29 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		// TODO Auto-generated method stub
 		
 	//}
-	void bar(String ev,StatusUpdaterBolt d,String name,Thread t) {
+	void bar(String ev,StatusUpdaterBolt d,String name) {
 		
 	    Thread barThread = new Thread(new Runnable() {
 	        @Override
 	        public void run() {
+	        	while(true) {
 	        	String status= d.check_delete(ev);
 	        	System.out.println("foo" + status);
 	    		if (status.equals("CANCEL")) {
-	    			//getThreadByName(name).interrupt();
-	    			t.interrupt();
+	    			su.update_table("CANCELED", ev); 
+	    			getThreadByName(name).interrupt();
+	    			//t.interrupt();
 	    			
-	    			 
 	    		}
-	    		 try {
-	    			 //3 minuts
+	    		try {
 					Thread.sleep(3 * 60 * 1000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+	    		
+	        	}
+	    		
 	        }
 	    });
         System.out.println("foo started");
@@ -759,7 +764,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 	}
 	
 	
-	/*
+	
 	
 	void trace_with_timeout (JsonNode current, String urlValue, RemoteWebDriver driver, List<SimpleEntry> urls,TracePlayer trplay, Metadata metadata) {
 		//if (current != null) {
@@ -818,7 +823,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 			// traverseTrace(root, driver, urlValue, urls, ccount);
 		//} // root
 	}
-	*/
+	
 	
 	
 }

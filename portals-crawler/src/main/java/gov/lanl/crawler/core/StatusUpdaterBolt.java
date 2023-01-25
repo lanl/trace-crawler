@@ -170,7 +170,7 @@ public class StatusUpdaterBolt extends AbstractStatusUpdaterBolt {
 		// String tableName="urls";
 		// String query = tableName + " ( status)"
 		// + " values (?, ?, ?, ?, ?, ?, md5(?), ?)";
-		String sql = "Update urls set status='?'   where event_id='?'";
+		String sql = "Update urls set status=?   where event_id=?";
 		// System.out.println(query);
 
 		PreparedStatement preparedStmt;

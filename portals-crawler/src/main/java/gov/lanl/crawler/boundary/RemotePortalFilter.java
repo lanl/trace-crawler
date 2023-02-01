@@ -83,7 +83,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		String a = Thread.currentThread().getName();
 		System.out.println("Thread name" +Thread.currentThread().getName()); 
 		getThreadByName(a);
-		
+		String event = metadata.getFirstValue("event");
 		StringBuilder dummyContent = new StringBuilder("<html>");
 		bu = new TraceUtils();
 		Map cap = driver.getCapabilities().asMap();
@@ -104,9 +104,10 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 			if (tableName != null) {
 				su = new StatusUpdaterBolt();
 				su.prepare_ext(stormConf);
+				bar(event,su,a,driver);
 			}
 		}
-
+		
 		String urlValue = driver.getCurrentUrl().toString();
 		//
 		System.out.println("filterurl" + filterurl);
@@ -167,9 +168,9 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		}
 		
 		//JsonLogger a = statsloger.info().field("url",urlValue);
-		String event = metadata.getFirstValue("event");
+		//String event = metadata.getFirstValue("event");
 		//initializing  checking  thread
-		////bar(event,su,a);
+		//bar(event,su,a);
 		//System.out.println("bar");
 		TracePlayer trplay = new TracePlayer(slowmode,driver);
 		EventFiringWebDriver efd = new EventFiringWebDriver(driver);
@@ -734,17 +735,18 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 		// TODO Auto-generated method stub
 		
 	//}
-	void bar(String ev,StatusUpdaterBolt d,String name) {
+	void bar(String ev,StatusUpdaterBolt d,String name,RemoteWebDriver driver) {
 		
 	    Thread barThread = new Thread(new Runnable() {
 	        @Override
 	        public void run() {
 	        	while(true) {
 	        	String status= d.check_delete(ev);
-	        	System.out.println("foo" + status);
+	        	System.out.println("bar" + status);
 	    		if (status.equals("CANCEL")) {
 	    			su.update_table("CANCELED", ev); 
-	    			getThreadByName(name).interrupt();
+	    			//getThreadByName(name).interrupt();
+	    			driver.quit();
 	    			//t.interrupt();
 	    			
 	    		}
@@ -759,7 +761,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 	    		
 	        }
 	    });
-        System.out.println("foo started");
+        System.out.println("bar started");
 	    barThread.start();
 	}
 	

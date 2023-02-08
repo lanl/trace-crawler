@@ -43,6 +43,7 @@ public class ResultsResource {
 	String new_row_tmpl = "<tr scope=\"row\" class=\"d-flex {}\">";
 	String row_tmpl = "<td class=\"inline-block text-truncate {}\">{1}</td>";
 	String a_tmpl = "<a href=\"{}\">{}</a>";
+	String c_tmpl="<a href=\"{}\" class=\"btn btn-default\">Cancel</a>";
 	static String reshtml_tmpl;
 	static String navhtml;
 	private static String warcbaseurl;
@@ -202,7 +203,10 @@ public class ResultsResource {
 			b = a_tmpl.replaceAll(Pattern.quote("{}"), wb);
 			a = a.replace("{1}", b);
 			rows.append(a);
-			
+			//cancel button
+			a = row_tmpl.replace("{}","col-1");
+			b = c_tmpl.replaceAll(Pattern.quote("{}"), "/delete/"+jid);
+			a = a.replace("{1}", b);
 			rows.append("</tr>");
 		}
 		return rows.toString();

@@ -751,7 +751,7 @@ public class RemotePortalFilter extends NavigationFilter implements Callback  {
 	    			
 	    		}
 	    		try {
-					Thread.sleep(3 * 60 * 1000);
+					Thread.sleep(1 * 60 * 1000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

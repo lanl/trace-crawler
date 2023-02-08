@@ -207,6 +207,7 @@ public class ResultsResource {
 			a = row_tmpl.replace("{}","col-1");
 			b = c_tmpl.replaceAll(Pattern.quote("{}"), "/delete/"+jid);
 			a = a.replace("{1}", b);
+			rows.append(a);
 			rows.append("</tr>");
 		}
 		return rows.toString();

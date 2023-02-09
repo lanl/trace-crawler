@@ -163,7 +163,7 @@ public class ResultsResource {
 			else {
 			rows.append(new_row_tmpl.replace("{}","table-success")); }
 			
-			String a = row_tmpl.replace("{}","col-2");
+			String a = row_tmpl.replace("{}","col-1");
 			String b = a_tmpl.replaceAll(Pattern.quote("{}"), ldate);
 			a = a.replace("{1}", b);
 			//System.out.println(a);
@@ -204,7 +204,7 @@ public class ResultsResource {
 			a = a.replace("{1}", b);
 			rows.append(a);
 			//cancel button
-			a = row_tmpl.replace("{}","col-1");
+			a = row_tmpl.replace("{}","col-auto p-1");
 			b = c_tmpl.replaceAll(Pattern.quote("{}"), "/delete/"+jid);
 			a = a.replace("{1}", b);
 			rows.append(a);

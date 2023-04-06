@@ -20,7 +20,7 @@ First we  can lauch all components :
 
 ``` sh
 cd ./trace-crawler
-docker-compose -f docker-compose.yaml up --build  --remove-orphans
+docker-compose  up --build  --remove-orphans
 ```
 and in tracer-archiver container
 ``` sh

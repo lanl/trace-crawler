@@ -1,15 +1,32 @@
-## Trace-Crawler  based on StormCrawler see https://github.com/DigitalPebble/storm-crawler/wiki. 
-Produces WARC files to be stored in ./warcs/warcstore directory.
-The plugin to execute the trace  is done thru navigation filter of StormCrawler.
-The trace is a json file where web page navigation steps are recorded in tree-like data structure.
-The navigation filter interprets the json data structure and issues selenium api calls to the selenium hub. Hub is the central point in the Selenium Grid that routes the JSON  commands to the individual browsers-nodes. The Remote Web Driver is configured with proxy, so the http api calls are done with  proxy service, warcprox, to record all traffic to warc files. 
-For each url seed the crawler starts and stops personal proxy when it finishes to make sure that all navigation steps of particular trace and corresponding embedded resources are well separated into a single warc file. Thus this is selective crawling where we want to archive web resource with well defined boundaries.
-``` sh
-The chrome browser extension to create the trace  can be found at. https://github.com/lanl/Memento-Tracer-Extention 
+
+## The Memento Tracer toolset is a set of four components that can be used to capture the essence of web publications. The components are:
+
+### Browser extension:
+This extension records a user's interactions with a web page, such as clicks, scrolls, and form submissions. The recorded interactions are stored in a JSON file called a "trace."
+The chrome browser extension to create the trace  can be found at  https://github.com/lanl/Memento-Tracer-Extention 
+### Trace-Crawler: 
+This component uses traces to navigate web pages and capture their content. The crawler can be configured to crawl specific URLs, or it can crawl entire websites.
+### Web application:
+This application allows users to submit URLs and traces to the crawler. The application also provides a dashboard that displays the status of crawling jobs.
 To install demo web interface to submit the crawling jobs see :
 https://github.com/lanl/trace-crawler/tree/master/portals-crawler/demo
 Example of tracerdemo installation: http://tracerdemo.mementoweb.org/
-``` 
+### Desktop Trace test tool:
+This tool allows users to visualize the steps taken by the crawler to follow a trace.
+see https://github.com/lanl/trace-crawler/tree/master/portals-crawler/  section "desktop test"
+
+## Trace-Crawler  based on StormCrawler see https://github.com/DigitalPebble/storm-crawler/wiki. 
+Produces WARC files to be stored in ./warcs/warcstore directory.
+To create mini archives of web resources with user-defined boundaries, we implemented a selective crawling process. This process uses a StormCrawler plugin to execute traces. The plugin interprets the trace JSON data structure and issues Selenium API calls to the Selenium hub. The hub routes the commands to individual browsers-nodes. The Remote Web Driver is configured with a proxy service, warcprox, to record all traffic to WARC files. For each URL seed, the crawler starts and stops a personal proxy when it finishes. This ensures that all navigation steps of a particular trace and its corresponding resources are well separated into a single WARC file.
+
+Here are some of the benefits of this selective crawling process:
+
+It allows users to create personal archives of web resources with user-defined boundaries.
+It ensures that all navigation steps of a particular trace and its corresponding resources are well separated into a single WARC file to support temporal integrity.
+It is a flexible and powerful way to create personal mini archives of web resources.
+
+We provided two options for loading URLs and traces to the crawler to support batch operations and individual requests through our web interface. The crawler can use a list of tuples as input, where each tuple contains the URL of the web resource and the URL of the corresponding JSON trace file. The second option involves using a combination of a seed list of URLs and a registry of predefined trace files with corresponding URLs, as well as regular expressions that indicate which trace to apply to each URL.
+
 ## Build the Project:
 * if you do not want to use docker go to the portals-crawler directory and follow instructions 
 * or see docker instructions below

@@ -14,6 +14,8 @@ Example of tracerdemo installation: http://tracerdemo.mementoweb.org/
 ### Desktop Trace test tool:
 This tool allows users to visualize the steps taken by the crawler to follow a trace.
 see https://github.com/lanl/trace-crawler/tree/master/portals-crawler/  section "desktop test"
+this short video recorded work of desktop test. You can see the elements  about to be activated turn yellow. 
+https://github.com/lanl/Memento-Tracer-Extention/blob/master/examples/git_issues_next/githubnext-2022-06-08.avi
 
 ## Trace-Crawler  based on StormCrawler see https://github.com/DigitalPebble/storm-crawler/wiki. 
 Produces WARC files to be stored in ./warcs/warcstore directory.

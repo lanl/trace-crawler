@@ -18,14 +18,12 @@ this short video recorded work of desktop test. You can see the elements  about 
 https://github.com/lanl/Memento-Tracer-Extention/blob/master/examples/git_issues_next/githubnext-2022-06-08.avi
 
 ## Trace-Crawler  based on StormCrawler see https://github.com/DigitalPebble/storm-crawler/wiki. 
-Produces WARC files to be stored in ./warcs/warcstore directory.
-To create mini archives of web resources with user-defined boundaries, we implemented a selective crawling process. This process uses a StormCrawler plugin to execute traces. The plugin interprets the trace JSON data structure and issues Selenium API calls to the Selenium hub. The hub routes the commands to individual browsers-nodes. The Remote Web Driver is configured with a proxy service, warcprox, to record all traffic to WARC files. For each URL seed, the crawler starts and stops a personal proxy when it finishes. This ensures that all navigation steps of a particular trace and its corresponding resources are well separated into a single WARC file.
+To craft compact archives of web resources based on user-specified criteria, we've implemented a focused crawling approach. This method employs a StormCrawler plugin to execute traces. The plugin interprets JSON-formatted trace data, utilizing the Selenium API to issue commands via the Selenium hub, which in turn forwards these commands to individual browser nodes. Configured with a proxy service, warcprox, the Remote WebDriver captures all traffic and records it into WARC files. For every URL seed, the crawler initializes and halts a dedicated proxy upon completion, ensuring that each step of a particular trace, along with its associated resources, is isolated within a single WARC file.
 
-Here are some of the benefits of this selective crawling process:
-
-It allows users to create personal archives of web resources with user-defined boundaries.
-It ensures that all navigation steps of a particular trace and its corresponding resources are well separated into a single WARC file to support temporal integrity.
-It is a flexible and powerful way to create personal mini archives of web resources.
+Here are some of the benefits of this targeted crawling process:
+* Empowers users to curate personalized archives of web resources according to their defined parameters or boundaries.
+* Ensures that all navigational steps within a specific trace, along with its corresponding resources, are encapsulated within a unified WARC file, maintaining temporal integrity.
+* Provides a versatile and robust method for creating individualized mini-archives of web resources.
 
 We provided two options for loading URLs and traces to the crawler to support batch operations and individual requests through our web interface. The crawler can use a list of tuples as input, where each tuple contains the URL of the web resource and the URL of the corresponding JSON trace file. The second option involves using a combination of a seed list of URLs and a registry of predefined trace files with corresponding URLs, as well as regular expressions that indicate which trace to apply to each URL.
 

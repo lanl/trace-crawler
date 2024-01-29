@@ -17,7 +17,7 @@ see https://github.com/lanl/trace-crawler/tree/master/portals-crawler/  section 
 this short video recorded work of desktop test. You can see the elements  about to be activated turn yellow. 
 https://github.com/lanl/Memento-Tracer-Extention/blob/master/examples/git_issues_next/githubnext-2022-06-08.avi
 
-## Trace-Crawler  based on StormCrawler see https://github.com/DigitalPebble/storm-crawler/wiki. 
+## Trace-Crawler  based on StormCrawler library, see https://github.com/DigitalPebble/storm-crawler/wiki. 
 To craft compact archives of web resources based on user-specified criteria, we've implemented a focused crawling approach. This method employs a StormCrawler plugin to execute traces. The plugin interprets JSON-formatted trace data, utilizing the Selenium API to issue commands via the Selenium hub, which in turn forwards these commands to individual browser nodes. Configured with a proxy service, warcprox, the Remote WebDriver captures all traffic and records it into WARC files. For every URL seed, the crawler initializes and halts a dedicated proxy upon completion, ensuring that each step of a particular trace, along with its associated resources, is isolated within a single WARC file.
 
 Here are some of the benefits of this targeted crawling process:
@@ -44,13 +44,13 @@ $ mvn clean package
 
 ## Run trace-crawler Topology on Docker
 A configuration to run the topologies via docker-compose is provided. 
-The file ./docker-compose.yaml puts every component (Mysql, Apache storm, Warcproxy, Chrome Selenium hub) into  containers.
+The file ./docker-compose.yml puts every component (Mysql, Apache storm, Warcproxy, Chrome Selenium hub) into  containers.
 First we launch all components:
 
 
 
 ``` sh
-docker-compose -f docker-compose.yaml up --build  --remove-orphans
+docker-compose -f docker-compose.yml up --build  --remove-orphans
 docker-compose run
 
 ```
@@ -113,6 +113,7 @@ navigationfilters.config.file: "boundary-filters3.json"
   
 ```
 The ./seeds , ./traces, ./warcs, ./data, ./certs directories are shared between docker container and host machine. 
+
 ## LANL C number C22054
 © 2022. Triad National Security, LLC. All rights reserved.
 This program was produced under U.S. Government contract 89233218CNA000001 for Los Alamos

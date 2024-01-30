@@ -113,7 +113,7 @@ navigationfilters.config.file: "boundary-filters3.json"
   
 ```
 The ./seeds , ./traces, ./warcs, ./data, ./certs directories are shared between docker container and host machine. 
-
+Make permissions for directories readable writable. 
 ## LANL C number C22054
 © 2022. Triad National Security, LLC. All rights reserved.
 This program was produced under U.S. Government contract 89233218CNA000001 for Los Alamos
